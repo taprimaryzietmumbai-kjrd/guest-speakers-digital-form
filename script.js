@@ -21,7 +21,11 @@ document.getElementById("speakerForm").addEventListener("submit",async e=>{
  const from=document.getElementById("fromDate").value,to=document.getElementById("toDate").value;
  if(from&&to&&from>to){status("Presentation From Date cannot be later than Presentation To Date.",false);return}
  const org=document.getElementById("organization").value;
- const data={name:document.getElementById("name").value.trim(),rank:document.getElementById("rank").value.trim(),organization:org==="Others"?(document.getElementById("otherOrg").value.trim()||"Others"):org,whatsapp:document.getElementById("whatsapp").value.trim(),bank:document.getElementById("bank").value.trim(),ifsc:document.getElementById("ifsc").value.trim().toUpperCase(),upi:document.getElementById("upi").value.trim(),pan:document.getElementById("pan").value.trim().toUpperCase(),presentationDate:document.getElementById("presentationDate").value,fromDate:from,toDate:to,role:document.getElementById("role").value,signatureData:hasInk?canvas.toDataURL("image/png"):""};
+ const workshopTitle=document.getElementById("workshopTitle").value.trim();
+ const targetGroup=document.getElementById("targetGroup").value.trim();
+ if(!workshopTitle){status("Workshop Title is required.",false);return}
+ if(!targetGroup){status("Target Group is required.",false);return}
+ const data={workshopTitle:workshopTitle,targetGroup:targetGroup,name:document.getElementById("name").value.trim(),rank:document.getElementById("rank").value.trim(),organization:org==="Others"?(document.getElementById("otherOrg").value.trim()||"Others"):org,whatsapp:document.getElementById("whatsapp").value.trim(),bank:document.getElementById("bank").value.trim(),ifsc:document.getElementById("ifsc").value.trim().toUpperCase(),upi:document.getElementById("upi").value.trim(),pan:document.getElementById("pan").value.trim().toUpperCase(),presentationDate:document.getElementById("presentationDate").value,fromDate:from,toDate:to,role:document.getElementById("role").value,signatureData:hasInk?canvas.toDataURL("image/png"):""};
  const btn=document.getElementById("saveBtn");btn.disabled=true;btn.textContent="Saving…";
  try{const r=await fetch(APPS_SCRIPT_URL,{method:"POST",body:JSON.stringify(data)});const j=await r.json();if(!j.ok)throw new Error(j.error||"Unable to save");status("✅ Speaker record saved successfully. Record ID: "+j.recordId,true)}
  catch(err){status("❌ "+err.message,false)}
