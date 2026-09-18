@@ -122,6 +122,15 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 <p id="status" class="help"></p>
 </div>
 </form>
+
+<div class="card" id="successCard" style="display:none;border-left:5px solid #1b7f5a">
+<h2>Submission Completed</h2>
+<p id="successMessage">Your Resource Person Availability &amp; Contribution response has been submitted to ZIET Mumbai.</p>
+<div class="actions">
+<a id="financialLink" class="primary" href="#" style="display:inline-block;text-decoration:none">Proceed to Form 2 — Financial / Speaker Details</a>
+</div>
+<p class="help">Please complete Form 2 separately to provide financial and speaker details.</p>
+</div>
 </main>
 
 <script>
@@ -225,20 +234,16 @@ canvas.addEventListener('touchstart',down);canvas.addEventListener('touchmove',m
 function clearSig(){ctx.clearRect(0,0,canvas.width,canvas.height)}
 document.getElementById('sigFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{clearSig();ctx.drawImage(im,0,0,canvas.width,canvas.height)};im.src=URL.createObjectURL(f)});
 
-document.getElementById('form').addEventListener('submit',e=>{
+document.getElementById('form').addEventListener('submit',async e=>{
  e.preventDefault();
  const status=document.getElementById('status');
+ const submitBtn=e.submitter || document.querySelector('#form button[type="submit"]');
  const name=document.getElementById('name').value.trim();
  const modes=[...document.querySelectorAll('#modes input:checked')].map(x=>x.value);
  const selected=[...document.querySelectorAll('input[name=session]:checked')].map((cb,idx)=>{
    const row=cb.closest('.session');
    const specificMode=row.querySelector('select[data-mode]').value;
-   return {
-     id:String(row.dataset.sessionIndex || (idx+1)),
-     session:cb.value,
-     category:'Music Teacher Training',
-     preferredContribution:specificMode || modes.join(', ')
-   };
+   return {id:String(row.dataset.sessionIndex || (idx+1)),session:cb.value,category:'Music Teacher Training',preferredContribution:specificMode || modes.join(', ')};
  });
  if(!selected.length)return alert('Please select at least one preferred session.');
  if(!modes.length && selected.some(x=>!x.preferredContribution))return alert('Please select at least one mode of contribution.');
@@ -252,68 +257,38 @@ document.getElementById('form').addEventListener('submit',e=>{
  for(let i=0;i<n;i++){let d=new Date(start);d.setDate(d.getDate()+i);dayList.push('Day '+(i+1)+' — '+d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}));}
  const sig=document.getElementById('sig').toDataURL('image/png');
  const payload={
-   workshopFrom:from,
-   workshopTo:to,
-   workshopDuration:n,
-   resourcePerson:name,
-   email:document.getElementById('email').value.trim(),
-   phone:document.getElementById('mobile').value.trim(),
-   institution:document.getElementById('institution').value.trim(),
-   expertise:document.getElementById('expertise').value.trim(),
-   preferredDates:dayList,
-   sessions:selected,
-   contributionModes:modes,
-   remarks:document.getElementById('remarks').value.trim(),
-   signatureData:sig,
+   workshopFrom:from, workshopTo:to, workshopDuration:n, resourcePerson:name,
+   email:document.getElementById('email').value.trim(), phone:document.getElementById('mobile').value.trim(),
+   institution:document.getElementById('institution').value.trim(), expertise:document.getElementById('expertise').value.trim(),
+   preferredDates:dayList, sessions:selected, contributionModes:modes,
+   remarks:document.getElementById('remarks').value.trim(), signatureData:sig,
    formType:'Resource Person Availability & Contribution Planner'
  };
-
  status.textContent='Submitting response…';
-
- // Submit through a normal HTML POST to a hidden iframe.
- // This avoids browser CORS/fetch restrictions with Google Apps Script.
- const frame=document.createElement('iframe');
- frame.name='gasSubmitFrame_'+Date.now();
- frame.style.display='none';
- document.body.appendChild(frame);
-
- const postForm=document.createElement('form');
- postForm.method='POST';
- postForm.action=GOOGLE_SCRIPT_URL;
- postForm.target=frame.name;
- postForm.style.display='none';
-
- const field=document.createElement('textarea');
- field.name='payload';
- field.value=JSON.stringify(payload);
- postForm.appendChild(field);
- document.body.appendChild(postForm);
-
- let finished=false;
+ if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='Submitting…';}
  const showSuccess=()=>{
-   if(finished)return;
-   finished=true;
-   status.textContent='Submitted successfully.';
+   status.textContent='Submission request sent.';
    document.getElementById('form').style.display='none';
    document.getElementById('adminPanel').style.display='none';
    document.getElementById('successCard').style.display='block';
-   const rpParam=encodeURIComponent(name);
-   document.getElementById('financialLink').href='https://taprimaryzietmumbai-kjrd.github.io/guest-speakers-digital-form/?rp='+rpParam;
+   document.getElementById('financialLink').href='https://taprimaryzietmumbai-kjrd.github.io/guest-speakers-digital-form/?rp='+encodeURIComponent(name);
    window.scrollTo({top:document.getElementById('successCard').offsetTop-20,behavior:'smooth'});
-   setTimeout(()=>{postForm.remove();frame.remove();},3000);
  };
-
- // The iframe load indicates that the POST was handed off to the Apps Script web app.
- frame.addEventListener('load',()=>setTimeout(showSuccess,700),{once:true});
-
- postForm.submit();
-
- // Safety timeout: do not show the old "internet connection" error.
- setTimeout(()=>{
-   if(!finished){
-     showSuccess();
-   }
- },5000);
+ try{
+   // Raw JSON is required by the existing Apps Script doPost(e).
+   // no-cors is intentional: the browser cannot read the response, but the POST body is delivered.
+   await fetch(GOOGLE_SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload),keepalive:true});
+   showSuccess();
+ }catch(err){
+   // Retry with Beacon, which also sends the JSON body as text/plain without a CORS preflight.
+   try{
+     const sent=navigator.sendBeacon(GOOGLE_SCRIPT_URL,new Blob([JSON.stringify(payload)],{type:'text/plain;charset=UTF-8'}));
+     if(sent){showSuccess();return;}
+   }catch(_){ }
+   if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='Submit Availability Response';}
+   status.textContent='Submission could not be sent.';
+   alert('The submission request could not be sent. Please try again.');
+ }
 });
 applyRP();
 </script>
