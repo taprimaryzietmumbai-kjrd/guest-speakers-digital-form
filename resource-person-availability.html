@@ -135,7 +135,7 @@ function renderSessions(){
  SESSIONS.forEach((s,i)=>{
    if(q && !s.toLowerCase().includes(q)) return;
    visible++;
-   sessionsEl.innerHTML+=`<div class="session" data-session-index="${i}"><label><input type="checkbox" name="session" value="${s}"> ${i+1}. ${s}</label><select data-mode="${i}" style="margin-top:6px"><option value="">Contribution mode for this session</option><option>Lecture-Demonstration</option><option>Hands-on Workshop</option><option>Interactive Activity</option><option>Performance / Demonstration</option><option>Panel / Discussion</option><option>Resource / Material Sharing</option></select></div>`;
+   sessionsEl.innerHTML+=`<div class="session" data-session-index="${i}"><label><input type="checkbox" name="session" value="${s}"> ${i+1}. ${s}</label><select data-mode="${i}" style="margin-top:6px"><option value="">Specific contribution mode (optional)</option><option>Lecture-Demonstration</option><option>Hands-on Workshop</option><option>Interactive Activity</option><option>Performance / Demonstration</option><option>Panel / Discussion</option><option>Resource / Material Sharing</option></select></div>`;
  });
  document.getElementById('sessionCount').textContent=`Showing ${visible} of ${SESSIONS.length} topics`;
 }
@@ -229,15 +229,14 @@ document.getElementById('form').addEventListener('submit',async e=>{
  e.preventDefault();
  const status=document.getElementById('status');
  const name=document.getElementById('name').value.trim();
+ const modes=[...document.querySelectorAll('#modes input:checked')].map(x=>x.value);
  const selected=[...document.querySelectorAll('input[name=session]:checked')].map(cb=>{
    const row=cb.closest('.session');
-   const mode=row.querySelector('select[data-mode]').value;
-   return {topic:cb.value, contributionMode:mode};
+   const specificMode=row.querySelector('select[data-mode]').value;
+   return {topic:cb.value, contributionMode:specificMode || modes.join(', ')};
  });
  if(!selected.length)return alert('Please select at least one preferred session.');
- if(selected.some(x=>!x.contributionMode))return alert('Please select a contribution mode for every selected session.');
- const modes=[...document.querySelectorAll('#modes input:checked')].map(x=>x.value);
- if(!modes.length)return alert('Please select at least one overall mode of contribution.');
+ if(!modes.length && selected.some(x=>!x.contributionMode))return alert('Please select at least one mode of contribution.');
  if(!name)return alert('Please enter/select the Resource Person name.');
  const from=document.getElementById('from').value, to=document.getElementById('to').value;
  if(!from||!to)return alert('Please select the Workshop From and To dates.');
