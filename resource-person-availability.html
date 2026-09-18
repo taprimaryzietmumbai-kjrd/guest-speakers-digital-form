@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZIET Mumbai — Resource Person Availability</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#eef6fb;color:#172033}
+header{background:linear-gradient(90deg,#4b2bbd,#0876b9,#d88908);color:white;padding:24px 5%;border-radius:0 0 28px 28px}
+h1{margin:0;font-size:28px}.sub{margin-top:8px}
+main{max-width:1050px;margin:22px auto;padding:0 16px}
+.card{background:white;border-radius:18px;padding:22px;margin:16px 0;box-shadow:0 4px 18px #0001}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+label{font-weight:700;display:block;margin-bottom:7px}
+input,select,textarea{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ccd8e8;border-radius:10px;font-size:15px}
+textarea{min-height:90px}.help{color:#5c6678;font-size:13px}
+button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer}
+.primary{background:#1769aa;color:#fff}.secondary{background:#e9eef5;color:#172033}
+.days{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.day{background:#f0f6ff;border:1px solid #c9def5;padding:8px 12px;border-radius:9px}
+.sessions{max-height:340px;overflow:auto;border:1px solid #d8e1ed;border-radius:10px;padding:10px}
+.session{padding:9px;border-bottom:1px solid #edf1f5}.session:last-child{border:0}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+#adminPanel{display:none}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<h1>🎼 ZIET Mumbai — Music Teacher Training</h1>
+<div class="sub">Resource Person Availability & Contribution Planner</div>
+</header>
+<main>
+
+<div class="card" id="adminPanel">
+<h2>Administrator — Personal Invitation Links</h2>
+<p class="help">This add-on does not replace your existing Guest Speaker form. It is an additional availability page in the same repository.</p>
+<div class="grid">
+<div><label>Resource Person</label>
+<select id="adminPerson"><option value="">Select Resource Person</option>
+<option>Dr. Mamnoon Fatima</option><option>DR. UDAY KUMAR MISHRA</option>
+<option>DR. DINANATH MISHRA</option><option>Dr. Sachin Pardeshi</option>
+<option>Dr. Deepti Pandya</option><option>Internal Speaker</option><option>Guest Speaker</option></select></div>
+<div><label>Personal Link</label><input id="personalLink" readonly placeholder="Generate a personal link"></div>
+</div>
+<div class="actions">
+<button class="primary" onclick="generateLink()">Generate Personal Link</button>
+<button class="secondary" onclick="copyLink()">Copy Link</button>
+<button class="secondary" onclick="copyInvitation()">Copy Invitation Message</button>
+</div>
+<p id="adminStatus" class="help"></p>
+</div>
+
+<form id="form">
+<div class="card">
+<h2>1. Resource Person Details</h2>
+<div class="grid">
+<div><label>Name *</label><select id="name" required>
+<option value="">Select Resource Person</option><option>Dr. Mamnoon Fatima</option><option>DR. UDAY KUMAR MISHRA</option><option>DR. DINANATH MISHRA</option><option>Dr. Sachin Pardeshi</option><option>Dr. Deepti Pandya</option><option>Internal Speaker</option><option>Guest Speaker</option></select></div>
+<div><label>Email *</label><input id="email" type="email" required></div>
+<div><label>Mobile / WhatsApp *</label><input id="mobile" required></div>
+<div><label>Institution / Organization *</label><input id="institution" required></div>
+</div>
+<div style="margin-top:16px"><label>Area of Expertise *</label><textarea id="expertise" required></textarea></div>
+</div>
+
+<div class="card">
+<h2>2. Upcoming Workshop Dates</h2>
+<p class="help">Select From and To dates. Duration and Day 1, Day 2… dates are generated automatically.</p>
+<div class="grid">
+<div><label>From Date *</label><input id="from" type="date" required></div>
+<div><label>To Date *</label><input id="to" type="date" required></div>
+</div>
+<p><b>Duration:</b> <span id="duration">—</span></p>
+<div id="days" class="days"></div>
+</div>
+
+<div class="card">
+<h2>3. Preferred Sessions / Contribution Areas</h2>
+<div class="sessions" id="sessions"></div>
+</div>
+
+<div class="card">
+<h2>4. Mode of Contribution</h2>
+<div id="modes">
+<label><input type="checkbox" value="Face-to-Face / In-person"> Face-to-Face / In-person</label>
+<label><input type="checkbox" value="Online / Virtual"> Online / Virtual</label>
+<label><input type="checkbox" value="Lecture-Demonstration"> Lecture-Demonstration</label>
+<label><input type="checkbox" value="Hands-on Workshop"> Hands-on Workshop</label>
+<label><input type="checkbox" value="Interactive Activity"> Interactive Activity</label>
+<label><input type="checkbox" value="Panel / Discussion"> Panel / Discussion</label>
+<label><input type="checkbox" value="Performance / Demonstration"> Performance / Demonstration</label>
+<label><input type="checkbox" value="Resource / Material Sharing"> Resource / Material Sharing</label>
+</div>
+<label style="margin-top:15px">Remarks / Technical Requirements</label>
+<textarea id="remarks"></textarea>
+</div>
+
+<div class="card">
+<h2>5. Expert Signature</h2>
+<p class="help">Draw your signature below or upload an image.</p>
+<canvas id="sig" width="800" height="180" style="width:100%;border:1px solid #ccd8e8;border-radius:10px;touch-action:none"></canvas>
+<div class="actions"><button type="button" class="secondary" onclick="clearSig()">Clear Signature</button><input type="file" id="sigFile" accept="image/png,image/jpeg,image/webp"></div>
+</div>
+
+<div class="card">
+<h2>6. Submit Response</h2>
+<button class="primary" type="submit">Submit Availability Response</button>
+<p id="status" class="help"></p>
+</div>
+</form>
+</main>
+
+<script>
+const SESSIONS=[
+"Vision & Objectives of the KVS Primary Music Teachers Training Programme",
+"Indian Music: Raga, Tala and Musical Appreciation",
+"Music Pedagogy for the Primary Stage",
+"Rhythm, Movement and Experiential Learning",
+"Voice, Singing and Classroom Music",
+"Instrumental Music & Bansuri: Demonstration and Pedagogy",
+"Music, Creativity and Expression",
+"Integrating Music with Foundational Literacy and Numeracy",
+"Music Across the Curriculum",
+"Assessment, Observation and Documentation in Music Education",
+"Technology and Digital Resources for Music Teaching",
+"Inclusive Music Education and UDL",
+"Classroom Activities, Games and Improvisation",
+"Performance / Demonstration",
+"Resource Material / Teaching-Learning Resources"
+];
+const sessionsEl=document.getElementById('sessions');
+SESSIONS.forEach((s,i)=>sessionsEl.innerHTML+=`<div class="session"><label><input type="checkbox" name="session" value="${s}"> ${i+1}. ${s}</label><select data-mode="${i}" style="margin-top:6px"><option value="">Contribution mode for this session</option><option>Lecture-Demonstration</option><option>Hands-on Workshop</option><option>Interactive Activity</option><option>Performance / Demonstration</option><option>Panel / Discussion</option><option>Resource / Material Sharing</option></select></div>`);
+
+function dates(){
+ const a=document.getElementById('from').value,b=document.getElementById('to').value, box=document.getElementById('days');
+ box.innerHTML='';
+ if(!a||!b)return;
+ const start=new Date(a+'T00:00:00'), end=new Date(b+'T00:00:00');
+ const n=Math.floor((end-start)/86400000)+1;
+ if(n<1){document.getElementById('duration').textContent='Invalid date range';return}
+ document.getElementById('duration').textContent=n+' day'+(n>1?'s':'')+' (inclusive)';
+ for(let i=0;i<n;i++){let d=new Date(start);d.setDate(d.getDate()+i);box.innerHTML+=`<span class="day"><b>Day ${i+1}</b> — ${d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</span>`}
+}
+document.getElementById('from').addEventListener('change',dates);document.getElementById('to').addEventListener('change',dates);
+
+function applyRP(){
+ const rp=new URLSearchParams(location.search).get('rp');
+ document.getElementById('adminPanel').style.display=rp?'none':'block';
+ if(!rp)return;
+ const sel=document.getElementById('name'), opt=[...sel.options].find(o=>o.value.toLowerCase()===rp.toLowerCase());
+ if(opt){sel.value=opt.value;sel.disabled=true}
+}
+function generateLink(){
+ const p=document.getElementById('adminPerson').value;if(!p)return alert('Select a Resource Person.');
+ const link=location.href.split('?')[0]+'?rp='+encodeURIComponent(p);
+ document.getElementById('personalLink').value=link;document.getElementById('adminStatus').textContent='Personal link generated.';
+}
+async function copyLink(){const x=document.getElementById('personalLink').value;if(!x)return alert('Generate the link first.');await navigator.clipboard.writeText(x);document.getElementById('adminStatus').textContent='Link copied.'}
+async function copyInvitation(){
+ const p=document.getElementById('adminPerson').value,x=document.getElementById('personalLink').value;if(!p)return alert('Select a Resource Person.');if(!x){generateLink();return}
+ const m=`Subject: Invitation – KVS Music Teacher Training | Resource Person Availability
+
+Dear ${p},
+
+Greetings from Kendriya Vidyalaya Sangathan, ZIET Mumbai.
+
+You are requested to kindly indicate your availability and preferred contribution areas for the KVS Primary Music Teachers Training Programme.
+
+Please complete the Resource Person Availability Form:
+${x}
+
+Your response will help ZIET Mumbai prepare the workshop timetable and allocate sessions appropriately.
+
+With regards,
+ZIET Mumbai
+Kendriya Vidyalaya Sangathan`;
+ await navigator.clipboard.writeText(m);document.getElementById('adminStatus').textContent='Invitation message copied.'
+}
+const canvas=document.getElementById('sig'),ctx=canvas.getContext('2d');let drawing=false;
+function pos(e){const r=canvas.getBoundingClientRect(),t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*canvas.width/r.width,y:(t.clientY-r.top)*canvas.height/r.height}}
+function down(e){drawing=true;ctx.beginPath();const p=pos(e);ctx.moveTo(p.x,p.y);e.preventDefault()}
+function move(e){if(!drawing)return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke();e.preventDefault()}
+function up(){drawing=false}
+canvas.addEventListener('mousedown',down);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',up);canvas.addEventListener('mouseleave',up);
+canvas.addEventListener('touchstart',down);canvas.addEventListener('touchmove',move);canvas.addEventListener('touchend',up);
+function clearSig(){ctx.clearRect(0,0,canvas.width,canvas.height)}
+document.getElementById('sigFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{clearSig();ctx.drawImage(im,0,0,canvas.width,canvas.height)};im.src=URL.createObjectURL(f)});
+
+document.getElementById('form').addEventListener('submit',e=>{
+ e.preventDefault();
+ const selected=[...document.querySelectorAll('input[name=session]:checked')].map(x=>x.value);
+ if(!selected.length)return alert('Please select at least one preferred session.');
+ const modes=[...document.querySelectorAll('#modes input:checked')].map(x=>x.value);
+ if(!modes.length)return alert('Please select at least one mode of contribution.');
+ document.getElementById('status').textContent='Form validated successfully. Connect this page to the existing Google Apps Script backend before live submission.';
+});
+applyRP();
+</script>
+</body></html>
