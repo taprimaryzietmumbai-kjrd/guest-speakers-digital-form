@@ -75,17 +75,28 @@
 <script src="script.js"></script>
 
 <script>
-  // Auto-fill Speaker Name from the personal Resource Person link
-  const rp = new URLSearchParams(window.location.search).get('rp');
+  // Auto-fill Speaker Name and Workshop Title from the personal link
+  const params = new URLSearchParams(window.location.search);
+  const rp = params.get('rp');
+  const workshop = params.get('workshop');
 
   if (rp) {
     const nameField = document.getElementById('name');
-
     if (nameField) {
       nameField.value = rp;
       nameField.readOnly = true;
       nameField.style.backgroundColor = '#f1f5f9';
       nameField.style.cursor = 'not-allowed';
+    }
+  }
+
+  if (workshop) {
+    const workshopField = document.getElementById('workshopTitle');
+    if (workshopField) {
+      workshopField.value = workshop;
+      workshopField.readOnly = true;
+      workshopField.style.backgroundColor = '#f1f5f9';
+      workshopField.style.cursor = 'not-allowed';
     }
   }
 </script>
