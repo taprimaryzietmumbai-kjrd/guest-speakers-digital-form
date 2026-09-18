@@ -271,7 +271,8 @@ document.getElementById('form').addEventListener('submit',async e=>{
    document.getElementById('form').style.display='none';
    document.getElementById('adminPanel').style.display='none';
    document.getElementById('successCard').style.display='block';
-   document.getElementById('financialLink').href='https://taprimaryzietmumbai-kjrd.github.io/guest-speakers-digital-form/?rp='+encodeURIComponent(name);
+   const workshopTitle='Rhythm, Raga and Reflection: Reimagining Music Education with Bansuri';
+    document.getElementById('financialLink').href='https://taprimaryzietmumbai-kjrd.github.io/guest-speakers-digital-form/?rp='+encodeURIComponent(name)+'&workshop='+encodeURIComponent(workshopTitle);
    window.scrollTo({top:document.getElementById('successCard').offsetTop-20,behavior:'smooth'});
  };
  try{
