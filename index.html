@@ -73,5 +73,22 @@
   </form>
 </main>
 <script src="script.js"></script>
+
+<script>
+  // Auto-fill Speaker Name from the personal Resource Person link
+  const rp = new URLSearchParams(window.location.search).get('rp');
+
+  if (rp) {
+    const nameField = document.getElementById('name');
+
+    if (nameField) {
+      nameField.value = rp;
+      nameField.readOnly = true;
+      nameField.style.backgroundColor = '#f1f5f9';
+      nameField.style.cursor = 'not-allowed';
+    }
+  }
+</script>
+
 </body>
 </html>
