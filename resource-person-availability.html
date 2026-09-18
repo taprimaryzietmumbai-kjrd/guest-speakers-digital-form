@@ -230,13 +230,18 @@ document.getElementById('form').addEventListener('submit',async e=>{
  const status=document.getElementById('status');
  const name=document.getElementById('name').value.trim();
  const modes=[...document.querySelectorAll('#modes input:checked')].map(x=>x.value);
- const selected=[...document.querySelectorAll('input[name=session]:checked')].map(cb=>{
+ const selected=[...document.querySelectorAll('input[name=session]:checked')].map((cb,idx)=>{
    const row=cb.closest('.session');
    const specificMode=row.querySelector('select[data-mode]').value;
-   return {topic:cb.value, contributionMode:specificMode || modes.join(', ')};
+   return {
+     id:String(cb.closest('.session').dataset.sessionIndex || (idx+1)),
+     session:cb.value,
+     category:'Music Teacher Training',
+     preferredContribution:specificMode || modes.join(', ')
+   };
  });
  if(!selected.length)return alert('Please select at least one preferred session.');
- if(!modes.length && selected.some(x=>!x.contributionMode))return alert('Please select at least one mode of contribution.');
+ if(!modes.length && selected.some(x=>!x.preferredContribution))return alert('Please select at least one mode of contribution.');
  if(!name)return alert('Please enter/select the Resource Person name.');
  const from=document.getElementById('from').value, to=document.getElementById('to').value;
  if(!from||!to)return alert('Please select the Workshop From and To dates.');
@@ -249,22 +254,23 @@ document.getElementById('form').addEventListener('submit',async e=>{
  const payload={
    workshopFrom:from,
    workshopTo:to,
-   duration:n,
+   workshopDuration:n,
    resourcePerson:name,
    email:document.getElementById('email').value.trim(),
-   mobile:document.getElementById('mobile').value.trim(),
+   phone:document.getElementById('mobile').value.trim(),
    institution:document.getElementById('institution').value.trim(),
    expertise:document.getElementById('expertise').value.trim(),
-   preferredDates:dayList.join(' | '),
-   preferredSessions:selected.map(x=>x.topic+' — '+x.contributionMode).join('\n'),
-   overallContributionModes:modes.join(', '),
+   preferredDates:dayList,
+   sessions:selected,
+   contributionModes:modes,
    remarks:document.getElementById('remarks').value.trim(),
    signatureData:sig,
    formType:'Resource Person Availability & Contribution Planner'
  };
  status.textContent='Submitting response…';
  try{
-   await fetch(GOOGLE_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+   // Google Apps Script web apps accept this as a simple cross-origin POST.
+   await fetch(GOOGLE_SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)});
    status.textContent='Submitted successfully.';
    document.getElementById('form').style.display='none';
    document.getElementById('adminPanel').style.display='none';
@@ -273,8 +279,22 @@ document.getElementById('form').addEventListener('submit',async e=>{
    document.getElementById('financialLink').href='https://taprimaryzietmumbai-kjrd.github.io/guest-speakers-digital-form/?rp='+rpParam;
    window.scrollTo({top:document.getElementById('successCard').offsetTop-20,behavior:'smooth'});
  }catch(err){
+   // Fallback for browsers that reject fetch to a Google Apps Script web app.
+   try{
+     const sent=navigator.sendBeacon(GOOGLE_SCRIPT_URL,new Blob([JSON.stringify(payload)],{type:'text/plain;charset=UTF-8'}));
+     if(sent){
+       status.textContent='Submitted successfully.';
+       document.getElementById('form').style.display='none';
+       document.getElementById('adminPanel').style.display='none';
+       document.getElementById('successCard').style.display='block';
+       const rpParam=encodeURIComponent(name);
+       document.getElementById('financialLink').href='https://taprimaryzietmumbai-kjrd.github.io/guest-speakers-digital-form/?rp='+rpParam;
+       window.scrollTo({top:document.getElementById('successCard').offsetTop-20,behavior:'smooth'});
+       return;
+     }
+   }catch(_){ }
    status.textContent='Submission failed. Please try again.';
-   alert('The response could not be submitted. Please check your internet connection and try again.');
+   alert('The response could not be submitted. Please try again.');
  }
 });
 applyRP();
