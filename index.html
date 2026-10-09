@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Guest Speakers – Digital Entry Form</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guest Speakers – Digital Entry Form</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <main class="container">
@@ -16,11 +17,71 @@
 
   <form id="speakerForm" class="card">
     <div class="grid">
-      <div class="full"><label>Workshop Title <b>*</b></label><input id="workshopTitle" required placeholder="Enter the title of the workshop"></div>
-      <div class="full"><label>Target Group <b>*</b></label><select id="targetGroup" required><option value="">Select Target Group</option><option>Principal</option><option>Vice-Principal</option><option>Headmaster / Headmistress</option><option>Librarian</option><option>PGT (English)</option><option>PGT (Hindi)</option><option>PGT (Physics)</option><option>PGT (Chemistry)</option><option>PGT (Mathematics)</option><option>PGT (Economics)</option><option>PGT (History)</option><option>PGT (Geography)</option><option>PGT (Commerce)</option><option>PGT (Biology)</option><option>PGT (Bio-Technology)</option><option>TGT (Hindi)</option><option>TGT (English)</option><option>TGT (Sanskrit)</option><option>TGT (Social Studies)</option><option>TGT (Mathematics)</option><option>TGT (Science)</option><option>TGT (Physical &amp; Health Edn.)</option><option>TGT (Art Education)</option><option>TGT (Work Experience)</option><option>Special Educator (TGT)</option><option>Special Educator (PRT)</option><option>PRT</option><option>PRT (Music)</option><option>Administrative Officer</option><option>Finance Officer</option><option>Assistant Engineer</option><option>Assistant Section Officer</option><option>Junior Translator</option><option>Sr. Secretariat Assistant</option><option>Jr. Secretariat Assistant</option><option>Steno Gr I</option><option>Steno Gr II</option><option>WET</option><option>AET</option><option>PRTM</option><option>JSA</option><option>SSA</option><option>SO</option><option>AO</option></select></div>
-      <div><label>Name of the Speaker <b>*</b></label><input id="name" required></div>
-      <div><label>Role of the Speaker <b>*</b></label>
-        <select id="role" required>
+
+      <div class="full">
+        <label for="workshopTitle">Workshop Title <b>*</b></label>
+        <input id="workshopTitle" required placeholder="Enter the title of the workshop">
+      </div>
+
+      <div class="full">
+        <label for="targetGroup">Target Group <b>*</b></label>
+        <select id="targetGroup" required>
+          <option value="">Select Target Group</option>
+          <option>Principal</option>
+          <option>Vice-Principal</option>
+          <option>Headmaster / Headmistress</option>
+          <option>Librarian</option>
+          <option>PGT (English)</option>
+          <option>PGT (Hindi)</option>
+          <option>PGT (Physics)</option>
+          <option>PGT (Chemistry)</option>
+          <option>PGT (Mathematics)</option>
+          <option>PGT (Economics)</option>
+          <option>PGT (History)</option>
+          <option>PGT (Geography)</option>
+          <option>PGT (Commerce)</option>
+          <option>PGT (Biology)</option>
+          <option>PGT (Bio-Technology)</option>
+          <option>TGT (Hindi)</option>
+          <option>TGT (English)</option>
+          <option>TGT (Sanskrit)</option>
+          <option>TGT (Social Studies)</option>
+          <option>TGT (Mathematics)</option>
+          <option>TGT (Science)</option>
+          <option>TGT (Physical &amp; Health Edn.)</option>
+          <option>TGT (Art Education)</option>
+          <option>TGT (Work Experience)</option>
+          <option>Special Educator (TGT)</option>
+          <option>Special Educator (PRT)</option>
+          <option>PRT</option>
+          <option>PRT (Music)</option>
+          <option>Administrative Officer</option>
+          <option>Finance Officer</option>
+          <option>Assistant Engineer</option>
+          <option>Assistant Section Officer</option>
+          <option>Junior Translator</option>
+          <option>Sr. Secretariat Assistant</option>
+          <option>Jr. Secretariat Assistant</option>
+          <option>Steno Gr I</option>
+          <option>Steno Gr II</option>
+          <option>WET</option>
+          <option>AET</option>
+          <option>PRTM</option>
+          <option>JSA</option>
+          <option>SSA</option>
+          <option>SO</option>
+          <option>AO</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="name">Name of the Speaker <b>*</b></label>
+        <input id="name" required>
+      </div>
+
+      <div>
+        <label for="role">Role of the Speaker <b>*</b></label>
+        <select id="role" required onchange="updateDateMode()">
           <option value="">Select Role</option>
           <option>Course Director</option>
           <option>Assistant Course Director</option>
@@ -30,87 +91,131 @@
         </select>
       </div>
 
-      <div><label>Department / Organization</label>
+      <div>
+        <label for="organization">Department / Organization</label>
         <select id="organization" onchange="toggleOther()">
           <option value="">Select Organization</option>
-          <option>IIT</option><option>IIM</option><option>BTTC</option>
-          <option>MU</option><option>HBCSE</option><option>SNDTU</option><option>Others</option>
+          <option>IIT</option>
+          <option>IIM</option>
+          <option>BTTC</option>
+          <option>MU</option>
+          <option>HBCSE</option>
+          <option>SNDTU</option>
+          <option>Others</option>
         </select>
       </div>
-      <div id="otherWrap" class="hidden"><label>Other Organization</label><input id="otherOrg"></div>
 
-      <div><label>WhatsApp No. of the Speaker</label><input id="whatsapp" inputmode="tel"></div>
-      <div><label>Bank Account of the Speaker</label><input id="bank" inputmode="numeric"></div>
-      <div><label>IFSC Code of the Speaker's Branch</label><input id="ifsc" style="text-transform:uppercase"></div>
-      <div><label>UPI ID of the Speaker</label><input id="upi"></div>
-      <div><label>PAN No. of the Speaker</label><input id="pan" style="text-transform:uppercase"></div>
+      <div id="otherWrap" class="hidden">
+        <label for="otherOrg">Other Organization</label>
+        <input id="otherOrg">
+      </div>
 
-      <div><label>Presentation Day &amp; Date</label><input id="presentationDate" type="date" onchange="showDay()"><small id="weekday"></small></div>
-      <div><label>Presentation From Date</label><input id="fromDate" type="date"></div>
-      <div><label>Presentation To Date</label><input id="toDate" type="date"></div>
+      <div>
+        <label for="whatsapp">WhatsApp No. of the Speaker</label>
+        <input id="whatsapp" inputmode="tel">
+      </div>
 
-    
+      <div>
+        <label for="bank">Bank Account of the Speaker</label>
+        <input id="bank" inputmode="numeric">
+      </div>
 
-<div class="full section-heading">
-  <h3>1. Intended Attitudinal Changes</h3>
-  <p>Reflect on the shifts in teachers’ attitudes, beliefs, mindsets and professional perspectives that you intend to inspire through your presentation.</p>
-</div>
+      <div>
+        <label for="ifsc">IFSC Code of the Speaker's Branch</label>
+        <input id="ifsc" style="text-transform:uppercase">
+      </div>
 
-<div class="full">
-  <label for="attitudinalChange1">1. Beliefs and Assumptions</label>
-  <textarea id="attitudinalChange1" rows="3" placeholder="What existing beliefs or assumptions about teaching and learning do you hope teachers will reconsider?"></textarea>
-</div>
+      <div>
+        <label for="upi">UPI ID of the Speaker</label>
+        <input id="upi">
+      </div>
 
-<div class="full">
-  <label for="attitudinalChange2">2. Mindset and Perspective</label>
-  <textarea id="attitudinalChange2" rows="3" placeholder="What shift in mindset or professional perspective do you wish to encourage?"></textarea>
-</div>
+      <div>
+        <label for="pan">PAN No. of the Speaker</label>
+        <input id="pan" style="text-transform:uppercase">
+      </div>
 
-<div class="full">
-  <label for="attitudinalChange3">3. Understanding Learners</label>
-  <textarea id="attitudinalChange3" rows="3" placeholder="How might teachers’ perceptions of learners, their needs and their potential change?"></textarea>
-</div>
+      <!-- Date fields: each ID occurs only once -->
+      <div id="presentationDateWrap">
+        <label for="presentationDate">Presentation Day &amp; Date</label>
+        <input id="presentationDate" type="date" onchange="showDay()">
+        <small id="weekday"></small>
+      </div>
 
-<div class="full">
-  <label for="attitudinalChange4">4. Professional Attitudes</label>
-  <textarea id="attitudinalChange4" rows="3" placeholder="What attitudes towards inclusion, collaboration, innovation or reflective practice do you hope to strengthen?"></textarea>
-</div>
+      <div id="fromDateWrap" class="hidden">
+        <label for="fromDate">Presentation From Date</label>
+        <input id="fromDate" type="date">
+      </div>
 
-<div class="full">
-  <label for="attitudinalChange5">5. Intended Classroom Impact</label>
-  <textarea id="attitudinalChange5" rows="3" placeholder="How might these attitudinal shifts translate into more meaningful teaching–learning experiences?"></textarea>
-</div>
+      <div id="toDateWrap" class="hidden">
+        <label for="toDate">Presentation To Date</label>
+        <input id="toDate" type="date">
+      </div>
 
-<div class="full section-heading">
-  <h3>2. Intended Skills Development</h3>
-  <p>Identify the practical skills that participating teachers should be better equipped to apply following your presentation.</p>
-</div>
+      <!-- Intended Attitudinal Changes -->
+      <div class="full section-heading">
+        <h3>1. Intended Attitudinal Changes</h3>
+        <p>Reflect on the shifts in teachers’ attitudes, beliefs, mindsets and professional perspectives that you intend to inspire through your presentation.</p>
+      </div>
 
-<div class="full">
-  <label for="skill1">1. Instructional Design</label>
-  <textarea id="skill1" rows="3" placeholder="What teaching–learning activities, lesson plans or learning experiences should teachers be able to design?"></textarea>
-</div>
+      <div class="full">
+        <label for="attitudinalChange1">1. Beliefs and Assumptions</label>
+        <textarea id="attitudinalChange1" rows="3" placeholder="What existing beliefs or assumptions about teaching and learning do you hope teachers will reconsider?"></textarea>
+      </div>
 
-<div class="full">
-  <label for="skill2">2. Pedagogical Application</label>
-  <textarea id="skill2" rows="3" placeholder="What teaching strategies or classroom practices should teachers be able to apply?"></textarea>
-</div>
+      <div class="full">
+        <label for="attitudinalChange2">2. Mindset and Perspective</label>
+        <textarea id="attitudinalChange2" rows="3" placeholder="What shift in mindset or professional perspective do you wish to encourage?"></textarea>
+      </div>
 
-<div class="full">
-  <label for="skill3">3. Assessment and Feedback</label>
-  <textarea id="skill3" rows="3" placeholder="What assessment, observation or feedback skills should teachers develop?"></textarea>
-</div>
+      <div class="full">
+        <label for="attitudinalChange3">3. Understanding Learners</label>
+        <textarea id="attitudinalChange3" rows="3" placeholder="How might teachers’ perceptions of learners, their needs and their potential change?"></textarea>
+      </div>
 
-<div class="full">
-  <label for="skill4">4. Inclusion and Differentiation</label>
-  <textarea id="skill4" rows="3" placeholder="What skills should teachers use to address diverse learning needs and abilities?"></textarea>
-</div>
+      <div class="full">
+        <label for="attitudinalChange4">4. Professional Attitudes</label>
+        <textarea id="attitudinalChange4" rows="3" placeholder="What attitudes towards inclusion, collaboration, innovation or reflective practice do you hope to strengthen?"></textarea>
+      </div>
 
-<div class="full">
-  <label for="skill5">5. Reflection and Improvement</label>
-  <textarea id="skill5" rows="3" placeholder="What skills should teachers develop to reflect on evidence, evaluate their practice and improve learning outcomes?"></textarea>
-</div>
+      <div class="full">
+        <label for="attitudinalChange5">5. Intended Classroom Impact</label>
+        <textarea id="attitudinalChange5" rows="3" placeholder="How might these attitudinal shifts translate into more meaningful teaching–learning experiences?"></textarea>
+      </div>
 
+      <!-- Intended Skills Development -->
+      <div class="full section-heading">
+        <h3>2. Intended Skills Development</h3>
+        <p>Identify the practical skills that participating teachers should be better equipped to apply following your presentation.</p>
+      </div>
+
+      <div class="full">
+        <label for="skill1">1. Instructional Design</label>
+        <textarea id="skill1" rows="3" placeholder="What teaching–learning activities, lesson plans or learning experiences should teachers be able to design?"></textarea>
+      </div>
+
+      <div class="full">
+        <label for="skill2">2. Pedagogical Application</label>
+        <textarea id="skill2" rows="3" placeholder="What teaching strategies or classroom practices should teachers be able to apply?"></textarea>
+      </div>
+
+      <div class="full">
+        <label for="skill3">3. Assessment and Feedback</label>
+        <textarea id="skill3" rows="3" placeholder="What assessment, observation or feedback skills should teachers develop?"></textarea>
+      </div>
+
+      <div class="full">
+        <label for="skill4">4. Inclusion and Differentiation</label>
+        <textarea id="skill4" rows="3" placeholder="What skills should teachers use to address diverse learning needs and abilities?"></textarea>
+      </div>
+
+      <div class="full">
+        <label for="skill5">5. Reflection and Improvement</label>
+        <textarea id="skill5" rows="3" placeholder="What skills should teachers develop to reflect on evidence, evaluate their practice and improve learning outcomes?"></textarea>
+      </div>
+
+      <!-- Speaker Signature -->
+      <div class="full">
         <label>Speaker Signature</label>
         <div class="signatureBox">
           <canvas id="signature" width="1200" height="300"></canvas>
@@ -123,6 +228,7 @@
           <small>Draw using mouse/touch/stylus or upload a PNG/JPG/WebP signature.</small>
         </div>
       </div>
+
     </div>
 
     <div class="actions no-print">
@@ -130,37 +236,14 @@
       <button id="printBtn" type="button" class="printBtn" onclick="printForm()">🖨️ Print / Save as PDF</button>
       <button type="button" class="light" onclick="resetForm()">↺ Clear Form</button>
     </div>
+
     <div id="status" class="no-print"></div>
   </form>
 </main>
+
 <script src="script.js"></script>
 
-<script>
-  // Auto-fill Speaker Name and Workshop Title from the personal link
-  const params = new URLSearchParams(window.location.search);
-  const rp = params.get('rp');
-  const workshop = params.get('workshop');
-
-  if (rp) {
-    const nameField = document.getElementById('name');
-    if (nameField) {
-      nameField.value = rp;
-      nameField.readOnly = true;
-      nameField.style.backgroundColor = '#f1f5f9';
-      nameField.style.cursor = 'not-allowed';
-    }
-  }
-
-  if (workshop) {
-    const workshopField = document.getElementById('workshopTitle');
-    if (workshopField) {
-      workshopField.value = workshop;
-      workshopField.readOnly = true;
-      workshopField.style.backgroundColor = '#f1f5f9';
-      workshopField.style.cursor = 'not-allowed';
-    }
-  }
-
+<!-- One personal-link initializer -->
 <script>
 (function () {
   const params = new URLSearchParams(window.location.search);
@@ -171,7 +254,6 @@
     const nameField = document.getElementById("name");
     const titleField = document.getElementById("workshopTitle");
 
-    // Personal speaker link: prefill and lock the speaker name.
     if (speakerName && nameField) {
       nameField.value = speakerName;
       nameField.readOnly = true;
@@ -179,15 +261,12 @@
       nameField.style.cursor = "not-allowed";
     }
 
-    // Personal speaker link: lock the approved title only
-    // when the URL actually contains a workshop parameter.
     if (workshopTitle && titleField) {
       titleField.value = workshopTitle;
       titleField.readOnly = true;
       titleField.style.backgroundColor = "#f1f5f9";
       titleField.style.cursor = "not-allowed";
     } else if (titleField) {
-      // Administrator form: title must remain editable.
       titleField.readOnly = false;
       titleField.style.backgroundColor = "";
       titleField.style.cursor = "";
