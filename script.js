@@ -1,7 +1,9 @@
 
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFLTe2XX9tIkU6T2u0gETwwkOChWQ5bZ1GQfEsvRQGnud7jBcE800w_HahdPtFtIBu/exec";
 
-let canvas, ctx, drawing = false, hasInk = false;
+let canvas, ctx;
+let drawing = false;
+let hasInk = false;
 
 window.addEventListener("load", () => {
   canvas = document.getElementById("signature");
@@ -28,15 +30,17 @@ window.addEventListener("load", () => {
 });
 
 function pos(e) {
-  const r = canvas.getBoundingClientRect();
+  const rect = canvas.getBoundingClientRect();
+
   return {
-    x: (e.clientX - r.left) * canvas.width / r.width,
-    y: (e.clientY - r.top) * canvas.height / r.height
+    x: (e.clientX - rect.left) * canvas.width / rect.width,
+    y: (e.clientY - rect.top) * canvas.height / rect.height
   };
 }
 
 function start(e) {
   if (!canvas || !ctx) return;
+
   drawing = true;
   hasInk = true;
 
@@ -44,15 +48,16 @@ function start(e) {
     canvas.setPointerCapture(e.pointerId);
   }
 
-  const p = pos(e);
+  const point = pos(e);
   ctx.beginPath();
-  ctx.moveTo(p.x, p.y);
+  ctx.moveTo(point.x, point.y);
 }
 
 function draw(e) {
   if (!drawing || !ctx) return;
-  const p = pos(e);
-  ctx.lineTo(p.x, p.y);
+
+  const point = pos(e);
+  ctx.lineTo(point.x, point.y);
   ctx.stroke();
 }
 
@@ -72,17 +77,19 @@ function clearSignature() {
 }
 
 function loadImage(e) {
-  const file = e.target.files && e.target.files[0];
+  const input = e.target;
+  const file = input.files && input.files[0];
+
   if (!file || !canvas || !ctx) return;
 
   if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
     status("Please upload a PNG, JPG or WebP signature image.", false);
-    e.target.value = "";
+    input.value = "";
     return;
   }
 
-  const image = new Image();
   const objectUrl = URL.createObjectURL(file);
+  const image = new Image();
 
   image.onload = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -110,6 +117,7 @@ function loadImage(e) {
   image.onerror = () => {
     URL.revokeObjectURL(objectUrl);
     status("Unable to load the signature image.", false);
+    input.value = "";
   };
 
   image.src = objectUrl;
@@ -128,13 +136,13 @@ function toggleOther() {
 }
 
 function showDay() {
-  const field = document.getElementById("presentationDate");
+  const dateField = document.getElementById("presentationDate");
   const weekday = document.getElementById("weekday");
 
-  if (!field || !weekday) return;
+  if (!dateField || !weekday) return;
 
-  weekday.textContent = field.value
-    ? new Date(field.value + "T00:00:00").toLocaleDateString(
+  weekday.textContent = dateField.value
+    ? new Date(dateField.value + "T00:00:00").toLocaleDateString(
         undefined,
         {
           weekday: "long",
@@ -146,13 +154,17 @@ function showDay() {
     : "";
 }
 
-/* Resource Person uses a date range.
-   Every other role uses a single presentation date. */
+/*
+  Resource Person: Presentation From Date and To Date.
+  All other roles: one Presentation Date.
+  Switching roles preserves entered dates in the background,
+  but only the relevant date fields are submitted.
+*/
 function updateDateMode() {
-  const role = document.getElementById("role");
-  if (!role) return;
+  const roleField = document.getElementById("role");
+  if (!roleField) return;
 
-  const isResourcePerson = role.value === "Resource Person";
+  const isResourcePerson = roleField.value === "Resource Person";
 
   const singleWrap = document.getElementById("presentationDateWrap");
   const fromWrap = document.getElementById("fromDateWrap");
@@ -170,13 +182,23 @@ function updateDateMode() {
     toWrap.classList.toggle("hidden", !isResourcePerson);
   }
 
-  if (isResourcePerson) {
-    document.getElementById("presentationDate").value = "";
-    document.getElementById("weekday").textContent = "";
-  } else {
-    document.getElementById("fromDate").value = "";
-    document.getElementById("toDate").value = "";
+  const presentationDate = document.getElementById("presentationDate");
+  const fromDate = document.getElementById("fromDate");
+  const toDate = document.getElementById("toDate");
+
+  if (presentationDate) {
+    presentationDate.required = !isResourcePerson;
   }
+
+  if (fromDate) {
+    fromDate.required = isResourcePerson;
+  }
+
+  if (toDate) {
+    toDate.required = isResourcePerson;
+  }
+
+  showDay();
 }
 
 function status(message, ok) {
@@ -225,10 +247,20 @@ async function submitSpeakerRecord(e) {
     ? ""
     : fieldValue("presentationDate");
 
-  const from = isResourcePerson ? fieldValue("fromDate") : "";
-  const to = isResourcePerson ? fieldValue("toDate") : "";
+  const fromDate = isResourcePerson ? fieldValue("fromDate") : "";
+  const toDate = isResourcePerson ? fieldValue("toDate") : "";
 
-  if (isResourcePerson && from && to && from > to) {
+  if (!isResourcePerson && !presentationDate) {
+    status("Please select the Presentation Date.", false);
+    return;
+  }
+
+  if (isResourcePerson && (!fromDate || !toDate)) {
+    status("Please select both Presentation From Date and To Date.", false);
+    return;
+  }
+
+  if (isResourcePerson && fromDate > toDate) {
     status(
       "Presentation From Date cannot be later than Presentation To Date.",
       false
@@ -237,6 +269,16 @@ async function submitSpeakerRecord(e) {
   }
 
   const organizationValue = fieldValue("organization");
+
+  if (!organizationValue) {
+    status("Please select the Organization.", false);
+    return;
+  }
+
+  if (organizationValue === "Others" && !fieldValue("otherOrg")) {
+    status("Please enter the Organization name.", false);
+    return;
+  }
 
   const attitudinalChanges = [
     fieldValue("attitudinalChange1"),
@@ -259,8 +301,9 @@ async function submitSpeakerRecord(e) {
     targetGroup,
     name,
     rank: "",
+
     organization: organizationValue === "Others"
-      ? (fieldValue("otherOrg") || "Others")
+      ? fieldValue("otherOrg")
       : organizationValue,
 
     whatsapp: fieldValue("whatsapp"),
@@ -270,8 +313,8 @@ async function submitSpeakerRecord(e) {
     pan: fieldValue("pan").toUpperCase(),
 
     presentationDate,
-    fromDate: from,
-    toDate: to,
+    fromDate,
+    toDate,
     role,
 
     attitudinalChanges,
@@ -328,7 +371,6 @@ async function submitSpeakerRecord(e) {
       link.rel = "noopener";
       link.className = "pdfLink";
       link.textContent = "📄 View / Download Speaker PDF";
-
       statusElement.appendChild(link);
     } else {
       status(
