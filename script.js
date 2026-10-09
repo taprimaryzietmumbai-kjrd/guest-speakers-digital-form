@@ -20,15 +20,15 @@ window.addEventListener("load", () => {
   }
 
   const form = document.getElementById("speakerForm");
-
   if (form) {
     form.addEventListener("submit", submitSpeakerRecord);
   }
+
+  updateDateMode();
 });
 
 function pos(e) {
   const r = canvas.getBoundingClientRect();
-
   return {
     x: (e.clientX - r.left) * canvas.width / r.width,
     y: (e.clientY - r.top) * canvas.height / r.height
@@ -37,7 +37,6 @@ function pos(e) {
 
 function start(e) {
   if (!canvas || !ctx) return;
-
   drawing = true;
   hasInk = true;
 
@@ -52,7 +51,6 @@ function start(e) {
 
 function draw(e) {
   if (!drawing || !ctx) return;
-
   const p = pos(e);
   ctx.lineTo(p.x, p.y);
   ctx.stroke();
@@ -69,38 +67,36 @@ function clearSignature() {
 
   hasInk = false;
 
-  const fileInput = document.getElementById("signatureFile");
-  if (fileInput) fileInput.value = "";
+  const input = document.getElementById("signatureFile");
+  if (input) input.value = "";
 }
 
 function loadImage(e) {
   const file = e.target.files && e.target.files[0];
   if (!file || !canvas || !ctx) return;
 
-  const allowedTypes = ["image/png", "image/jpeg", "image/webp"];
-
-  if (!allowedTypes.includes(file.type)) {
+  if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
     status("Please upload a PNG, JPG or WebP signature image.", false);
     e.target.value = "";
     return;
   }
 
-  const img = new Image();
+  const image = new Image();
   const objectUrl = URL.createObjectURL(file);
 
-  img.onload = () => {
+  image.onload = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const scale = Math.min(
-      canvas.width / img.width,
-      canvas.height / img.height
+      canvas.width / image.width,
+      canvas.height / image.height
     );
 
-    const width = img.width * scale;
-    const height = img.height * scale;
+    const width = image.width * scale;
+    const height = image.height * scale;
 
     ctx.drawImage(
-      img,
+      image,
       (canvas.width - width) / 2,
       (canvas.height - height) / 2,
       width,
@@ -111,12 +107,12 @@ function loadImage(e) {
     URL.revokeObjectURL(objectUrl);
   };
 
-  img.onerror = () => {
+  image.onerror = () => {
     URL.revokeObjectURL(objectUrl);
     status("Unable to load the signature image.", false);
   };
 
-  img.src = objectUrl;
+  image.src = objectUrl;
 }
 
 function toggleOther() {
@@ -137,10 +133,8 @@ function showDay() {
 
   if (!field || !weekday) return;
 
-  const value = field.value;
-
-  weekday.textContent = value
-    ? new Date(value + "T00:00:00").toLocaleDateString(
+  weekday.textContent = field.value
+    ? new Date(field.value + "T00:00:00").toLocaleDateString(
         undefined,
         {
           weekday: "long",
@@ -150,6 +144,39 @@ function showDay() {
         }
       )
     : "";
+}
+
+/* Resource Person uses a date range.
+   Every other role uses a single presentation date. */
+function updateDateMode() {
+  const role = document.getElementById("role");
+  if (!role) return;
+
+  const isResourcePerson = role.value === "Resource Person";
+
+  const singleWrap = document.getElementById("presentationDateWrap");
+  const fromWrap = document.getElementById("fromDateWrap");
+  const toWrap = document.getElementById("toDateWrap");
+
+  if (singleWrap) {
+    singleWrap.classList.toggle("hidden", isResourcePerson);
+  }
+
+  if (fromWrap) {
+    fromWrap.classList.toggle("hidden", !isResourcePerson);
+  }
+
+  if (toWrap) {
+    toWrap.classList.toggle("hidden", !isResourcePerson);
+  }
+
+  if (isResourcePerson) {
+    document.getElementById("presentationDate").value = "";
+    document.getElementById("weekday").textContent = "";
+  } else {
+    document.getElementById("fromDate").value = "";
+    document.getElementById("toDate").value = "";
+  }
 }
 
 function status(message, ok) {
@@ -165,27 +192,19 @@ function printForm() {
 }
 
 function fieldValue(id) {
-  const field = document.getElementById(id);
-  return field ? field.value.trim() : "";
+  const element = document.getElementById(id);
+  return element ? element.value.trim() : "";
 }
 
 async function submitSpeakerRecord(e) {
   e.preventDefault();
 
-  const from = fieldValue("fromDate");
-  const to = fieldValue("toDate");
-
-  if (from && to && from > to) {
-    status(
-      "Presentation From Date cannot be later than Presentation To Date.",
-      false
-    );
-    return;
-  }
+  const role = fieldValue("role");
+  const isResourcePerson = role === "Resource Person";
 
   const workshopTitle = fieldValue("workshopTitle");
   const targetGroup = fieldValue("targetGroup");
-  const speakerName = fieldValue("name");
+  const name = fieldValue("name");
 
   if (!workshopTitle) {
     status("Workshop Title is required.", false);
@@ -197,8 +216,23 @@ async function submitSpeakerRecord(e) {
     return;
   }
 
-  if (!speakerName) {
+  if (!name) {
     status("Name of the Speaker is required.", false);
+    return;
+  }
+
+  const presentationDate = isResourcePerson
+    ? ""
+    : fieldValue("presentationDate");
+
+  const from = isResourcePerson ? fieldValue("fromDate") : "";
+  const to = isResourcePerson ? fieldValue("toDate") : "";
+
+  if (isResourcePerson && from && to && from > to) {
+    status(
+      "Presentation From Date cannot be later than Presentation To Date.",
+      false
+    );
     return;
   }
 
@@ -221,9 +255,9 @@ async function submitSpeakerRecord(e) {
   ];
 
   const data = {
-    workshopTitle: workshopTitle,
-    targetGroup: targetGroup,
-    name: speakerName,
+    workshopTitle,
+    targetGroup,
+    name,
     rank: "",
     organization: organizationValue === "Others"
       ? (fieldValue("otherOrg") || "Others")
@@ -235,18 +269,14 @@ async function submitSpeakerRecord(e) {
     upi: fieldValue("upi"),
     pan: fieldValue("pan").toUpperCase(),
 
-    presentationDate: fieldValue("presentationDate"),
+    presentationDate,
     fromDate: from,
     toDate: to,
-    role: fieldValue("role"),
+    role,
 
-    // Five attitudinal-change entries
-    attitudinalChanges: attitudinalChanges,
+    attitudinalChanges,
+    skills,
 
-    // Five skills entries
-    skills: skills,
-
-    // Signature as a PNG data URL
     signatureData: hasInk && canvas
       ? canvas.toDataURL("image/png")
       : ""
@@ -319,7 +349,6 @@ async function submitSpeakerRecord(e) {
 
 function resetForm(show = true) {
   const form = document.getElementById("speakerForm");
-
   if (form) form.reset();
 
   const otherWrap = document.getElementById("otherWrap");
@@ -329,6 +358,7 @@ function resetForm(show = true) {
   if (weekday) weekday.textContent = "";
 
   clearSignature();
+  updateDateMode();
 
   if (show) status("Form cleared.", true);
 }
