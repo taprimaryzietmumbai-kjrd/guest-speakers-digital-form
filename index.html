@@ -99,6 +99,47 @@
       workshopField.style.cursor = 'not-allowed';
     }
   }
+
+<script>
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const speakerName = params.get("rp");
+  const workshopTitle = params.get("workshop");
+
+  function initialisePersonalLink() {
+    const nameField = document.getElementById("name");
+    const titleField = document.getElementById("workshopTitle");
+
+    // Personal speaker link: prefill and lock the speaker name.
+    if (speakerName && nameField) {
+      nameField.value = speakerName;
+      nameField.readOnly = true;
+      nameField.style.backgroundColor = "#f1f5f9";
+      nameField.style.cursor = "not-allowed";
+    }
+
+    // Personal speaker link: lock the approved title only
+    // when the URL actually contains a workshop parameter.
+    if (workshopTitle && titleField) {
+      titleField.value = workshopTitle;
+      titleField.readOnly = true;
+      titleField.style.backgroundColor = "#f1f5f9";
+      titleField.style.cursor = "not-allowed";
+    } else if (titleField) {
+      // Administrator form: title must remain editable.
+      titleField.readOnly = false;
+      titleField.style.backgroundColor = "";
+      titleField.style.cursor = "";
+      titleField.placeholder = "Enter the title of the workshop";
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initialisePersonalLink);
+  } else {
+    initialisePersonalLink();
+  }
+})();
 </script>
 
 </body>
