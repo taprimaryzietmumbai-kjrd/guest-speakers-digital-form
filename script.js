@@ -1,406 +1,240 @@
-
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFLTe2XX9tIkU6T2u0gETwwkOChWQ5bZ1GQfEsvRQGnud7jBcE800w_HahdPtFtIBu/exec";
 
-let canvas, ctx;
-let drawing = false;
-let hasInk = false;
+let canvas, ctx, drawing = false, hasInk = false;
+let speakerPhotoData = "";
+let presentationFileData = "";
+let presentationFileName = "";
 
 window.addEventListener("load", () => {
   canvas = document.getElementById("signature");
+  ctx = canvas.getContext("2d");
+  ctx.lineWidth = 4;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  canvas.addEventListener("pointerdown", start);
+  canvas.addEventListener("pointermove", draw);
+  canvas.addEventListener("pointerup", stop);
+  canvas.addEventListener("pointerleave", stop);
 
-  if (canvas) {
-    ctx = canvas.getContext("2d");
-    ctx.lineWidth = 4;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-
-    canvas.addEventListener("pointerdown", start);
-    canvas.addEventListener("pointermove", draw);
-    canvas.addEventListener("pointerup", stop);
-    canvas.addEventListener("pointercancel", stop);
-    canvas.addEventListener("pointerleave", stop);
-  }
-
-  const form = document.getElementById("speakerForm");
-  if (form) {
-    form.addEventListener("submit", submitSpeakerRecord);
-  }
-
+  document.getElementById("speakerPhoto").addEventListener("change", handleSpeakerPhoto);
+  document.getElementById("presentationFile").addEventListener("change", handlePresentationFile);
   updateDateMode();
+  toggleOther();
 });
 
 function pos(e) {
-  const rect = canvas.getBoundingClientRect();
-
-  return {
-    x: (e.clientX - rect.left) * canvas.width / rect.width,
-    y: (e.clientY - rect.top) * canvas.height / rect.height
-  };
+  const r = canvas.getBoundingClientRect();
+  return { x: (e.clientX - r.left) * canvas.width / r.width, y: (e.clientY - r.top) * canvas.height / r.height };
 }
-
 function start(e) {
-  if (!canvas || !ctx) return;
-
-  drawing = true;
-  hasInk = true;
-
-  if (canvas.setPointerCapture) {
-    canvas.setPointerCapture(e.pointerId);
-  }
-
-  const point = pos(e);
-  ctx.beginPath();
-  ctx.moveTo(point.x, point.y);
+  drawing = true; hasInk = true; canvas.setPointerCapture(e.pointerId);
+  const p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y);
 }
-
 function draw(e) {
-  if (!drawing || !ctx) return;
-
-  const point = pos(e);
-  ctx.lineTo(point.x, point.y);
-  ctx.stroke();
+  if (!drawing) return;
+  const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke();
 }
-
-function stop() {
-  drawing = false;
-}
+function stop() { drawing = false; }
 
 function clearSignature() {
-  if (ctx && canvas) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
-
+  if (!ctx) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   hasInk = false;
-
-  const input = document.getElementById("signatureFile");
-  if (input) input.value = "";
+  document.getElementById("signatureFile").value = "";
 }
-
 function loadImage(e) {
-  const input = e.target;
-  const file = input.files && input.files[0];
-
-  if (!file || !canvas || !ctx) return;
-
-  if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
-    status("Please upload a PNG, JPG or WebP signature image.", false);
-    input.value = "";
-    return;
-  }
-
-  const objectUrl = URL.createObjectURL(file);
-  const image = new Image();
-
-  image.onload = () => {
+  const f = e.target.files[0];
+  if (!f) return;
+  if (!f.type.startsWith("image/")) { status("Please choose an image file for the signature.", false); return; }
+  const img = new Image();
+  img.onload = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const scale = Math.min(
-      canvas.width / image.width,
-      canvas.height / image.height
-    );
-
-    const width = image.width * scale;
-    const height = image.height * scale;
-
-    ctx.drawImage(
-      image,
-      (canvas.width - width) / 2,
-      (canvas.height - height) / 2,
-      width,
-      height
-    );
-
+    const s = Math.min(canvas.width / img.width, canvas.height / img.height);
+    const w = img.width * s, h = img.height * s;
+    ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
     hasInk = true;
-    URL.revokeObjectURL(objectUrl);
+    URL.revokeObjectURL(img.src);
   };
-
-  image.onerror = () => {
-    URL.revokeObjectURL(objectUrl);
-    status("Unable to load the signature image.", false);
-    input.value = "";
-  };
-
-  image.src = objectUrl;
+  img.src = URL.createObjectURL(f);
 }
-
 function toggleOther() {
-  const organization = document.getElementById("organization");
-  const otherWrap = document.getElementById("otherWrap");
-
-  if (organization && otherWrap) {
-    otherWrap.classList.toggle(
-      "hidden",
-      organization.value !== "Others"
-    );
-  }
+  const org = document.getElementById("organization");
+  document.getElementById("otherWrap").classList.toggle("hidden", org.value !== "Others");
 }
-
 function showDay() {
-  const dateField = document.getElementById("presentationDate");
-  const weekday = document.getElementById("weekday");
-
-  if (!dateField || !weekday) return;
-
-  weekday.textContent = dateField.value
-    ? new Date(dateField.value + "T00:00:00").toLocaleDateString(
-        undefined,
-        {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric"
-        }
-      )
+  const v = document.getElementById("presentationDate").value;
+  document.getElementById("weekday").textContent = v
+    ? new Date(v + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" })
     : "";
 }
-
-/*
-  Resource Person: Presentation From Date and To Date.
-  All other roles: one Presentation Date.
-  Switching roles preserves entered dates in the background,
-  but only the relevant date fields are submitted.
-*/
-function updateDateMode() {
-  const roleField = document.getElementById("role");
-  if (!roleField) return;
-
-  const isResourcePerson = roleField.value === "Resource Person";
-
-  const singleWrap = document.getElementById("presentationDateWrap");
-  const fromWrap = document.getElementById("fromDateWrap");
-  const toWrap = document.getElementById("toDateWrap");
-
-  if (singleWrap) {
-    singleWrap.classList.toggle("hidden", isResourcePerson);
+function status(msg, ok) {
+  const s = document.getElementById("status");
+  s.textContent = msg;
+  s.className = ok ? "ok" : "err";
+}
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error("Could not read the uploaded photograph."));
+    reader.readAsDataURL(file);
+  });
+}
+async function handleSpeakerPhoto(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) { clearSpeakerPhoto(); return; }
+  const allowed = ["image/jpeg", "image/png", "image/webp"];
+  if (!allowed.includes(file.type)) {
+    e.target.value = "";
+    status("Please upload the face photograph as JPG, PNG or WebP.", false);
+    return;
   }
-
-  if (fromWrap) {
-    fromWrap.classList.toggle("hidden", !isResourcePerson);
+  if (file.size > 3 * 1024 * 1024) {
+    e.target.value = "";
+    status("The photograph must be 3 MB or smaller.", false);
+    return;
   }
-
-  if (toWrap) {
-    toWrap.classList.toggle("hidden", !isResourcePerson);
+  try {
+    speakerPhotoData = await readFileAsDataURL(file);
+    document.getElementById("speakerPhotoPreview").src = speakerPhotoData;
+    document.getElementById("speakerPhotoPreviewWrap").classList.remove("hidden");
+  } catch (err) {
+    status(err.message, false);
   }
-
-  const presentationDate = document.getElementById("presentationDate");
-  const fromDate = document.getElementById("fromDate");
-  const toDate = document.getElementById("toDate");
-
-  if (presentationDate) {
-    presentationDate.required = !isResourcePerson;
+}
+async function handlePresentationFile(e) {
+  const file = e.target.files && e.target.files[0];
+  presentationFileData = "";
+  presentationFileName = "";
+  document.getElementById("presentationFileName").textContent = "";
+  if (!file) return;
+  const isPptx = file.name.toLowerCase().endsWith(".pptx") &&
+    (file.type === "application/vnd.openxmlformats-officedocument.presentationml.presentation" || file.type === "" || file.type === "application/octet-stream");
+  if (!isPptx) {
+    e.target.value = "";
+    status("Please upload a PowerPoint presentation in .pptx format only.", false);
+    return;
   }
-
-  if (fromDate) {
-    fromDate.required = isResourcePerson;
+  if (file.size > 10 * 1024 * 1024) {
+    e.target.value = "";
+    status("The PPTX presentation must be 10 MB or smaller.", false);
+    return;
   }
-
-  if (toDate) {
-    toDate.required = isResourcePerson;
+  try {
+    presentationFileData = await readFileAsDataURL(file);
+    presentationFileName = file.name;
+    document.getElementById("presentationFileName").textContent = "Selected presentation: " + file.name;
+  } catch (err) {
+    e.target.value = "";
+    status("Could not read the PPTX presentation.", false);
   }
-
-  showDay();
+}
+function clearPresentationFile() {
+  presentationFileData = "";
+  presentationFileName = "";
+  const input = document.getElementById("presentationFile");
+  if (input) input.value = "";
+  const label = document.getElementById("presentationFileName");
+  if (label) label.textContent = "";
 }
 
-function status(message, ok) {
-  const element = document.getElementById("status");
-  if (!element) return;
-
-  element.textContent = message;
-  element.className = ok ? "ok" : "err";
+function clearSpeakerPhoto() {
+  speakerPhotoData = "";
+  const input = document.getElementById("speakerPhoto");
+  if (input) input.value = "";
+  const preview = document.getElementById("speakerPhotoPreview");
+  if (preview) preview.removeAttribute("src");
+  const wrap = document.getElementById("speakerPhotoPreviewWrap");
+  if (wrap) wrap.classList.add("hidden");
 }
 
-function printForm() {
-  window.print();
-}
-
-function fieldValue(id) {
-  const element = document.getElementById(id);
-  return element ? element.value.trim() : "";
-}
-
-async function submitSpeakerRecord(e) {
+document.getElementById("speakerForm").addEventListener("submit", async e => {
   e.preventDefault();
 
-  const role = fieldValue("role");
-  const isResourcePerson = role === "Resource Person";
+  const role = document.getElementById("role").value;
+  const usesDateRange = ["Resource Person", "Course Director", "Assistant Course Director"].includes(role);
+  const from = document.getElementById("fromDate").value;
+  const to = document.getElementById("toDate").value;
+  const presentationDate = document.getElementById("presentationDate").value;
+  const sessionStartTime = document.getElementById("sessionStartTime").value;
+  const sessionEndTime = document.getElementById("sessionEndTime").value;
 
-  const workshopTitle = fieldValue("workshopTitle");
-  const targetGroup = fieldValue("targetGroup");
-  const name = fieldValue("name");
-
-  if (!workshopTitle) {
-    status("Workshop Title is required.", false);
-    return;
+  if (usesDateRange && (!from || !to)) {
+    status("For Course Director, Assistant Course Director and Resource Person, please enter both the From Date and To Date.", false); return;
+  }
+  if (usesDateRange && from > to) {
+    status("Presentation From Date cannot be later than Presentation To Date.", false); return;
+  }
+  if (!usesDateRange && (!presentationDate || !sessionStartTime || !sessionEndTime)) {
+    status("Please select the presentation date and session start/end timings.", false); return;
+  }
+  if (!usesDateRange && sessionStartTime >= sessionEndTime) {
+    status("Session end time must be later than session start time.", false); return;
   }
 
-  if (!targetGroup) {
-    status("Target Group is required.", false);
-    return;
+  const orgValue = document.getElementById("organization").value;
+  const otherOrg = document.getElementById("otherOrg").value.trim();
+  if (orgValue === "Others" && !otherOrg) {
+    status("Please enter the name of the other organization.", false); return;
   }
 
-  if (!name) {
-    status("Name of the Speaker is required.", false);
-    return;
-  }
-
-  const presentationDate = isResourcePerson
-    ? ""
-    : fieldValue("presentationDate");
-
-  const fromDate = isResourcePerson ? fieldValue("fromDate") : "";
-  const toDate = isResourcePerson ? fieldValue("toDate") : "";
-
-  if (!isResourcePerson && !presentationDate) {
-    status("Please select the Presentation Date.", false);
-    return;
-  }
-
-  if (isResourcePerson && (!fromDate || !toDate)) {
-    status("Please select both Presentation From Date and To Date.", false);
-    return;
-  }
-
-  if (isResourcePerson && fromDate > toDate) {
-    status(
-      "Presentation From Date cannot be later than Presentation To Date.",
-      false
-    );
-    return;
-  }
-
-  const organizationValue = fieldValue("organization");
-
-  if (!organizationValue) {
-    status("Please select the Organization.", false);
-    return;
-  }
-
-  if (organizationValue === "Others" && !fieldValue("otherOrg")) {
-    status("Please enter the Organization name.", false);
-    return;
-  }
-
-  const attitudinalChanges = [
-    fieldValue("attitudinalChange1"),
-    fieldValue("attitudinalChange2"),
-    fieldValue("attitudinalChange3"),
-    fieldValue("attitudinalChange4"),
-    fieldValue("attitudinalChange5")
-  ];
-
-  const skills = [
-    fieldValue("skill1"),
-    fieldValue("skill2"),
-    fieldValue("skill3"),
-    fieldValue("skill4"),
-    fieldValue("skill5")
-  ];
+  const attitudinalChanges = [1,2,3,4,5].map(i => document.getElementById("attitudinalChange" + i).value.trim());
+  const skills = [1,2,3,4,5].map(i => document.getElementById("skill" + i).value.trim());
 
   const data = {
-    workshopTitle,
-    targetGroup,
-    name,
-    rank: "",
-
-    organization: organizationValue === "Others"
-      ? fieldValue("otherOrg")
-      : organizationValue,
-
-    whatsapp: fieldValue("whatsapp"),
-    bank: fieldValue("bank"),
-    ifsc: fieldValue("ifsc").toUpperCase(),
-    upi: fieldValue("upi"),
-    pan: fieldValue("pan").toUpperCase(),
-
-    presentationDate,
-    fromDate,
-    toDate,
+    workshopTitle: document.getElementById("workshopTitle").value.trim(),
+    targetGroup: document.getElementById("targetGroup").value,
+    name: document.getElementById("name").value.trim(),
+    rank: document.getElementById("rank") ? document.getElementById("rank").value.trim() : "",
+    organization: orgValue === "Others" ? otherOrg : orgValue,
+    whatsapp: document.getElementById("whatsapp").value.trim(),
+    bank: document.getElementById("bank").value.trim(),
+    ifsc: document.getElementById("ifsc").value.trim().toUpperCase(),
+    upi: document.getElementById("upi").value.trim(),
+    pan: document.getElementById("pan").value.trim().toUpperCase(),
     role,
-
+    presentationDate: usesDateRange ? "" : presentationDate,
+    sessionStartTime: usesDateRange ? "" : sessionStartTime,
+    sessionEndTime: usesDateRange ? "" : sessionEndTime,
+    fromDate: usesDateRange ? from : "",
+    toDate: usesDateRange ? to : "",
+    speakerPhotoData,
+    presentationFileData,
+    presentationFileName,
+    briefProfile: document.getElementById("briefProfile").value.trim(),
+    signatureData: hasInk ? canvas.toDataURL("image/png") : "",
     attitudinalChanges,
-    skills,
-
-    signatureData: hasInk && canvas
-      ? canvas.toDataURL("image/png")
-      : ""
+    skills
   };
 
-  const button = document.getElementById("saveBtn");
-  const originalText = button
-    ? button.textContent
-    : "💾 Save Speaker Record";
-
-  if (button) {
-    button.disabled = true;
-    button.textContent = "Saving…";
-  }
-
+  const btn = document.getElementById("saveBtn");
+  btn.disabled = true;
+  btn.textContent = "Saving…";
   try {
-    const response = await fetch(APPS_SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(data)
-    });
-
-    if (!response.ok) {
-      throw new Error("Server returned HTTP " + response.status);
-    }
-
-    const result = await response.json();
-
-    if (!result.ok) {
-      throw new Error(result.error || "Unable to save speaker record.");
-    }
-
-    const statusElement = document.getElementById("status");
-
-    if (result.pdfUrl && statusElement) {
-      statusElement.className = "ok";
-      statusElement.replaceChildren();
-
-      const message = document.createElement("div");
-      message.textContent = "✅ Speaker record saved successfully.";
-      statusElement.appendChild(message);
-
-      const record = document.createElement("div");
-      record.textContent = "Record ID: " + (result.recordId || "");
-      statusElement.appendChild(record);
-
-      const link = document.createElement("a");
-      link.href = result.pdfUrl;
-      link.target = "_blank";
-      link.rel = "noopener";
-      link.className = "pdfLink";
-      link.textContent = "📄 View / Download Speaker PDF";
-      statusElement.appendChild(link);
-    } else {
-      status(
-        "✅ Speaker record saved successfully. Record ID: " +
-          (result.recordId || ""),
-        true
-      );
-    }
-  } catch (error) {
-    status("❌ " + error.message, false);
+    const r = await fetch(APPS_SCRIPT_URL, { method: "POST", body: JSON.stringify(data) });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || "Unable to save the speaker record.");
+    let message = "✅ Speaker record saved successfully. Record ID: " + j.recordId;
+    if (j.pdfUrl) message += " | PDF: " + j.pdfUrl;
+    if (j.presentationFileUrl) message += " | PPTX: " + j.presentationFileUrl;
+    if (!j.emailSent && j.emailError) message += " | Record saved; email notification failed: " + j.emailError;
+    status(message, true);
+    resetForm(false);
+  } catch (err) {
+    status("❌ " + err.message, false);
   } finally {
-    if (button) {
-      button.disabled = false;
-      button.textContent = originalText;
-    }
+    btn.disabled = false;
+    btn.textContent = "💾 Save Speaker Record";
   }
-}
+});
 
 function resetForm(show = true) {
-  const form = document.getElementById("speakerForm");
-  if (form) form.reset();
-
-  const otherWrap = document.getElementById("otherWrap");
-  if (otherWrap) otherWrap.classList.add("hidden");
-
-  const weekday = document.getElementById("weekday");
-  if (weekday) weekday.textContent = "";
-
+  document.getElementById("speakerForm").reset();
+  document.getElementById("otherWrap").classList.add("hidden");
+  document.getElementById("weekday").textContent = "";
   clearSignature();
+  clearSpeakerPhoto();
+  clearPresentationFile();
   updateDateMode();
-
   if (show) status("Form cleared.", true);
 }
