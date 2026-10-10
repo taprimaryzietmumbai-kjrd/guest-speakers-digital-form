@@ -111,3 +111,8 @@ canvas{display:block;width:100%;height:190px;background:#fff;border:1px solid #c
 }
 
 .pdfLink{display:inline-block;margin-top:8px;padding:8px 12px;border-radius:8px;font-weight:700;text-decoration:none}
+#briefProfile {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 120px;
+}
