@@ -93,6 +93,20 @@ canvas{display:block;width:100%;height:190px;background:#fff;border:1px solid #c
   box-sizing: border-box;
 }
 
+/* Make Brief Professional Profile span the full form width */
+#briefProfile {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-height: 120px;
+}
+
+/* Ensure its containing field occupies the full row */
+#briefProfile {
+  grid-column: 1 / -1;
+}
+
   small{font-size:9px}
 }
 
