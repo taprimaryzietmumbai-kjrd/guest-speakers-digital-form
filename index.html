@@ -1,16 +1,40 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Guest Speakers Digital Form</title>
-<link rel="stylesheet" href="style.css">
+  <title>Guest Speakers Digital Form</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .timeFields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    #speakerPhotoPreview {
+      display: block;
+      max-width: 180px;
+      max-height: 180px;
+      object-fit: cover;
+      margin: 10px 0;
+      border-radius: 8px;
+    }
+    #speakerPhotoPreviewWrap { margin-top: 10px; }
+    .file-note {
+      margin: 6px 0 0;
+      font-size: .9rem;
+      color: #475569;
+    }
+    .hidden { display: none !important; }
+  </style>
 </head>
 <body>
 <main class="container">
   <header class="hero">
     <div class="badge">ZIET MUMBAI</div>
-<h1>🎙️ Guest Speakers Digital Form</h1>    <p>Digital Speaker Information &amp; Presentation Record</p>
+    <h1>🎙️ Guest Speakers Digital Form</h1>
+    <p>Digital Speaker Information &amp; Presentation Record</p>
   </header>
 
   <form id="speakerForm" class="card">
@@ -99,6 +123,16 @@
           <option>MU</option>
           <option>HBCSE</option>
           <option>SNDTU</option>
+          <option>KVS</option>
+          <option>TIFR</option>
+          <option>TISS</option>
+          <option>CETE, TISS</option>
+          <option>HBCSE, TIFR</option>
+          <option>Somaiya Vidyavihar University</option>
+          <option>K J Somaiya College of Science and Commerce</option>
+          <option>Sir J. J. School of Art, Architecture and Design</option>
+          <option>University of Mumbai</option>
+          <option>Nalanda Nritya Kala Mahavidyalaya</option>
           <option>Others</option>
         </select>
       </div>
@@ -133,20 +167,34 @@
         <input id="pan" style="text-transform:uppercase">
       </div>
 
-      <!-- Date fields: each ID occurs only once -->
+      <!-- Course Director, Assistant Course Director and Resource Person use a date range -->
       <div id="presentationDateWrap">
-        <label for="presentationDate">Presentation Day &amp; Date</label>
+        <label for="presentationDate">Presentation Day &amp; Date <b>*</b></label>
         <input id="presentationDate" type="date" onchange="showDay()">
         <small id="weekday"></small>
       </div>
 
+      <div id="sessionTimingWrap">
+        <label>Session Timing <b>*</b></label>
+        <div class="timeFields">
+          <div>
+            <label for="sessionStartTime">From</label>
+            <input id="sessionStartTime" type="time">
+          </div>
+          <div>
+            <label for="sessionEndTime">To</label>
+            <input id="sessionEndTime" type="time">
+          </div>
+        </div>
+      </div>
+
       <div id="fromDateWrap" class="hidden">
-        <label for="fromDate">Presentation From Date</label>
+        <label for="fromDate">Presentation From Date <b>*</b></label>
         <input id="fromDate" type="date">
       </div>
 
       <div id="toDateWrap" class="hidden">
-        <label for="toDate">Presentation To Date</label>
+        <label for="toDate">Presentation To Date <b>*</b></label>
         <input id="toDate" type="date">
       </div>
 
@@ -212,6 +260,36 @@
         <textarea id="skill5" rows="3" placeholder="What skills should teachers develop to reflect on evidence, evaluate their practice and improve learning outcomes?"></textarea>
       </div>
 
+      <!-- Speaker photograph and brief profile -->
+      <div class="full section-heading">
+        <h3>3. Speaker Photograph &amp; Brief Profile</h3>
+        <p>Please upload a clear face photograph for use in the workshop flyer and provide a brief professional profile.</p>
+      </div>
+
+      <div class="full">
+        <label for="speakerPhoto">Face Photograph (for the workshop flyer)</label>
+        <input id="speakerPhoto" type="file" accept="image/png,image/jpeg,image/webp">
+        <small>Upload a clear JPG, PNG or WebP image. Recommended maximum size: 3 MB.</small>
+        <div id="speakerPhotoPreviewWrap" class="hidden">
+          <img id="speakerPhotoPreview" alt="Speaker photograph preview">
+          <button type="button" class="light" onclick="clearSpeakerPhoto()">Remove Photograph</button>
+        </div>
+      </div>
+
+      <div class="full">
+        <label for="briefProfile">Brief Professional Profile</label>
+        <textarea id="briefProfile" rows="5" maxlength="2500" placeholder="Please share a brief professional profile (designation, institution, areas of expertise, qualifications and relevant experience)."></textarea>
+        <small>Maximum 2,500 characters.</small>
+      </div>
+
+      <!-- Optional advance PPTX upload -->
+      <div class="full">
+        <label for="presentationFile">PPTX Presentation (if prepared; optional)</label>
+        <input id="presentationFile" type="file" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation">
+        <small>Please upload your PowerPoint presentation in advance, if available. PPTX only; maximum file size 10 MB.</small>
+        <p id="presentationFileName" class="file-note"></p>
+      </div>
+
       <!-- Speaker Signature -->
       <div class="full">
         <label>Speaker Signature</label>
@@ -241,7 +319,39 @@
 
 <script src="script.js"></script>
 
-<!-- One personal-link initializer -->
+<script>
+function updateDateMode() {
+  const role = document.getElementById("role").value;
+  const usesDateRange = [
+    "Resource Person",
+    "Course Director",
+    "Assistant Course Director"
+  ].includes(role);
+
+  document.getElementById("presentationDateWrap").classList.toggle("hidden", usesDateRange);
+  document.getElementById("sessionTimingWrap").classList.toggle("hidden", usesDateRange);
+  document.getElementById("fromDateWrap").classList.toggle("hidden", !usesDateRange);
+  document.getElementById("toDateWrap").classList.toggle("hidden", !usesDateRange);
+
+  document.getElementById("presentationDate").required = !usesDateRange;
+  document.getElementById("sessionStartTime").required = !usesDateRange;
+  document.getElementById("sessionEndTime").required = !usesDateRange;
+  document.getElementById("fromDate").required = usesDateRange;
+  document.getElementById("toDate").required = usesDateRange;
+
+  if (usesDateRange) {
+    document.getElementById("presentationDate").value = "";
+    document.getElementById("sessionStartTime").value = "";
+    document.getElementById("sessionEndTime").value = "";
+    document.getElementById("weekday").textContent = "";
+  } else {
+    document.getElementById("fromDate").value = "";
+    document.getElementById("toDate").value = "";
+  }
+}
+</script>
+
+<!-- Personal link initializer -->
 <script>
 (function () {
   const params = new URLSearchParams(window.location.search);
