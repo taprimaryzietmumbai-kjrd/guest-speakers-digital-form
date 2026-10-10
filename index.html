@@ -6,12 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Guest Speakers Digital Form</title>
   <link rel="stylesheet" href="style.css">
+
   <style>
     .timeFields {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
+
     #speakerPhotoPreview {
       display: block;
       max-width: 180px;
@@ -20,17 +22,49 @@
       margin: 10px 0;
       border-radius: 8px;
     }
-    #speakerPhotoPreviewWrap { margin-top: 10px; }
+
+    #speakerPhotoPreviewWrap {
+      margin-top: 10px;
+    }
+
     .file-note {
       margin: 6px 0 0;
       font-size: .9rem;
       color: #475569;
     }
-    .hidden { display: none !important; }
+
+    .photo-option {
+      display: block;
+      margin: 12px 0 6px;
+    }
+
+    .photo-help {
+      display: block;
+      margin-top: 8px;
+      line-height: 1.6;
+      color: #475569;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 520px) {
+      .timeFields {
+        grid-template-columns: 1fr;
+      }
+
+      #speakerPhotoPreview {
+        max-width: 100%;
+        max-height: 240px;
+      }
+    }
   </style>
 </head>
+
 <body>
 <main class="container">
+
   <header class="hero">
     <div class="badge">ZIET MUMBAI</div>
     <h1>🎙️ Guest Speakers Digital Form</h1>
@@ -40,11 +74,17 @@
   <form id="speakerForm" class="card">
     <div class="grid">
 
+      <!-- Workshop title -->
       <div class="full">
         <label for="workshopTitle">Workshop Title <b>*</b></label>
-        <input id="workshopTitle" required placeholder="Enter the title of the workshop">
+        <input
+          id="workshopTitle"
+          required
+          placeholder="Enter the title of the workshop"
+        >
       </div>
 
+      <!-- Target group -->
       <div class="full">
         <label for="targetGroup">Target Group <b>*</b></label>
         <select id="targetGroup" required>
@@ -96,11 +136,13 @@
         </select>
       </div>
 
+      <!-- Speaker name -->
       <div>
         <label for="name">Name of the Speaker <b>*</b></label>
         <input id="name" required>
       </div>
 
+      <!-- Speaker role -->
       <div>
         <label for="role">Role of the Speaker <b>*</b></label>
         <select id="role" required onchange="updateDateMode()">
@@ -113,6 +155,7 @@
         </select>
       </div>
 
+      <!-- Organization -->
       <div>
         <label for="organization">Department / Organization</label>
         <select id="organization" onchange="toggleOther()">
@@ -142,6 +185,7 @@
         <input id="otherOrg">
       </div>
 
+      <!-- Contact and payment details -->
       <div>
         <label for="whatsapp">WhatsApp No. of the Speaker</label>
         <input id="whatsapp" inputmode="tel">
@@ -167,13 +211,20 @@
         <input id="pan" style="text-transform:uppercase">
       </div>
 
-      <!-- Course Director, Assistant Course Director and Resource Person use a date range -->
+      <!-- Single-date roles -->
       <div id="presentationDateWrap">
-        <label for="presentationDate">Presentation Day &amp; Date <b>*</b></label>
-        <input id="presentationDate" type="date" onchange="showDay()">
+        <label for="presentationDate">
+          Presentation Day &amp; Date <b>*</b>
+        </label>
+        <input
+          id="presentationDate"
+          type="date"
+          onchange="showDay()"
+        >
         <small id="weekday"></small>
       </div>
 
+      <!-- Session timing for single-date roles -->
       <div id="sessionTimingWrap">
         <label>Session Timing <b>*</b></label>
         <div class="timeFields">
@@ -188,6 +239,7 @@
         </div>
       </div>
 
+      <!-- Date-range roles -->
       <div id="fromDateWrap" class="hidden">
         <label for="fromDate">Presentation From Date <b>*</b></label>
         <input id="fromDate" type="date">
@@ -198,140 +250,289 @@
         <input id="toDate" type="date">
       </div>
 
-      <!-- Intended Attitudinal Changes -->
+      <!-- Intended attitudinal changes -->
       <div class="full section-heading">
         <h3>1. Intended Attitudinal Changes</h3>
-        <p>Reflect on the shifts in teachers’ attitudes, beliefs, mindsets and professional perspectives that you intend to inspire through your presentation.</p>
+        <p>
+          Reflect on the shifts in teachers’ attitudes, beliefs, mindsets
+          and professional perspectives that you intend to inspire
+          through your presentation.
+        </p>
       </div>
 
       <div class="full">
         <label for="attitudinalChange1">1. Beliefs and Assumptions</label>
-        <textarea id="attitudinalChange1" rows="3" placeholder="What existing beliefs or assumptions about teaching and learning do you hope teachers will reconsider?"></textarea>
+        <textarea
+          id="attitudinalChange1"
+          rows="3"
+          placeholder="What existing beliefs or assumptions about teaching and learning do you hope teachers will reconsider?"
+        ></textarea>
       </div>
 
       <div class="full">
         <label for="attitudinalChange2">2. Mindset and Perspective</label>
-        <textarea id="attitudinalChange2" rows="3" placeholder="What shift in mindset or professional perspective do you wish to encourage?"></textarea>
+        <textarea
+          id="attitudinalChange2"
+          rows="3"
+          placeholder="What shift in mindset or professional perspective do you wish to encourage?"
+        ></textarea>
       </div>
 
       <div class="full">
         <label for="attitudinalChange3">3. Understanding Learners</label>
-        <textarea id="attitudinalChange3" rows="3" placeholder="How might teachers’ perceptions of learners, their needs and their potential change?"></textarea>
+        <textarea
+          id="attitudinalChange3"
+          rows="3"
+          placeholder="How might teachers’ perceptions of learners, their needs and their potential change?"
+        ></textarea>
       </div>
 
       <div class="full">
         <label for="attitudinalChange4">4. Professional Attitudes</label>
-        <textarea id="attitudinalChange4" rows="3" placeholder="What attitudes towards inclusion, collaboration, innovation or reflective practice do you hope to strengthen?"></textarea>
+        <textarea
+          id="attitudinalChange4"
+          rows="3"
+          placeholder="What attitudes towards inclusion, collaboration, innovation or reflective practice do you hope to strengthen?"
+        ></textarea>
       </div>
 
       <div class="full">
         <label for="attitudinalChange5">5. Intended Classroom Impact</label>
-        <textarea id="attitudinalChange5" rows="3" placeholder="How might these attitudinal shifts translate into more meaningful teaching–learning experiences?"></textarea>
+        <textarea
+          id="attitudinalChange5"
+          rows="3"
+          placeholder="How might these attitudinal shifts translate into more meaningful teaching–learning experiences?"
+        ></textarea>
       </div>
 
-      <!-- Intended Skills Development -->
+      <!-- Intended skills development -->
       <div class="full section-heading">
         <h3>2. Intended Skills Development</h3>
-        <p>Identify the practical skills that participating teachers should be better equipped to apply following your presentation.</p>
+        <p>
+          Identify the practical skills that participating teachers
+          should be better equipped to apply following your presentation.
+        </p>
       </div>
 
       <div class="full">
         <label for="skill1">1. Instructional Design</label>
-        <textarea id="skill1" rows="3" placeholder="What teaching–learning activities, lesson plans or learning experiences should teachers be able to design?"></textarea>
+        <textarea
+          id="skill1"
+          rows="3"
+          placeholder="What teaching–learning activities, lesson plans or learning experiences should teachers be able to design?"
+        ></textarea>
       </div>
 
       <div class="full">
         <label for="skill2">2. Pedagogical Application</label>
-        <textarea id="skill2" rows="3" placeholder="What teaching strategies or classroom practices should teachers be able to apply?"></textarea>
+        <textarea
+          id="skill2"
+          rows="3"
+          placeholder="What teaching strategies or classroom practices should teachers be able to apply?"
+        ></textarea>
       </div>
 
       <div class="full">
         <label for="skill3">3. Assessment and Feedback</label>
-        <textarea id="skill3" rows="3" placeholder="What assessment, observation or feedback skills should teachers develop?"></textarea>
+        <textarea
+          id="skill3"
+          rows="3"
+          placeholder="What assessment, observation or feedback skills should teachers develop?"
+        ></textarea>
       </div>
 
       <div class="full">
         <label for="skill4">4. Inclusion and Differentiation</label>
-        <textarea id="skill4" rows="3" placeholder="What skills should teachers use to address diverse learning needs and abilities?"></textarea>
+        <textarea
+          id="skill4"
+          rows="3"
+          placeholder="What skills should teachers use to address diverse learning needs and abilities?"
+        ></textarea>
       </div>
 
       <div class="full">
         <label for="skill5">5. Reflection and Improvement</label>
-        <textarea id="skill5" rows="3" placeholder="What skills should teachers develop to reflect on evidence, evaluate their practice and improve learning outcomes?"></textarea>
+        <textarea
+          id="skill5"
+          rows="3"
+          placeholder="What skills should teachers develop to reflect on evidence, evaluate their practice and improve learning outcomes?"
+        ></textarea>
       </div>
 
-      <!-- Speaker photograph and brief profile -->
+      <!-- Speaker photograph -->
       <div class="full section-heading">
         <h3>3. Speaker Photograph &amp; Brief Profile</h3>
-        <p>Please upload a clear face photograph for use in the workshop flyer and provide a brief professional profile.</p>
+        <p>
+          Please provide a clear face photograph for the workshop flyer
+          and a brief professional profile.
+        </p>
       </div>
 
       <div class="full">
-        <label for="speakerPhoto">Face Photograph (for the workshop flyer)</label>
-        <input id="speakerPhoto" type="file" accept="image/png,image/jpeg,image/webp">
-        <small>Upload a clear JPG, PNG or WebP image. Recommended maximum size: 3 MB.</small>
+        <label for="speakerPhoto">
+          Face Photograph (for the workshop flyer)
+        </label>
+
+        <!-- Existing photo/file selection option: ID retained for script.js -->
+        <label class="photo-option" for="speakerPhoto">
+          Choose an Existing Photograph
+        </label>
+        <input
+          id="speakerPhoto"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+        >
+
+        <!-- Mobile camera option -->
+        <label class="photo-option" for="speakerPhotoCamera">
+          Take a Face Photo Using Mobile Camera
+        </label>
+        <input
+          id="speakerPhotoCamera"
+          type="file"
+          accept="image/*"
+          capture="user"
+          onchange="handleSpeakerPhoto(event)"
+        >
+
+        <small class="photo-help">
+          <strong>Photo size limit: Maximum 3 MB.</strong>
+          Accepted formats: JPG, PNG and WebP.
+          You may take a new photo using your mobile phone's front camera
+          or choose an existing photograph from your device.
+        </small>
+
         <div id="speakerPhotoPreviewWrap" class="hidden">
-          <img id="speakerPhotoPreview" alt="Speaker photograph preview">
-          <button type="button" class="light" onclick="clearSpeakerPhoto()">Remove Photograph</button>
+          <img
+            id="speakerPhotoPreview"
+            alt="Speaker photograph preview"
+          >
+          <button
+            type="button"
+            class="light"
+            onclick="clearSpeakerPhoto()"
+          >
+            Remove Photograph
+          </button>
         </div>
       </div>
 
+      <!-- Professional profile -->
       <div class="full">
         <label for="briefProfile">Brief Professional Profile</label>
-        <textarea id="briefProfile" rows="5" maxlength="2500" placeholder="Please share a brief professional profile (designation, institution, areas of expertise, qualifications and relevant experience)."></textarea>
+        <textarea
+          id="briefProfile"
+          rows="5"
+          maxlength="2500"
+          placeholder="Please share a brief professional profile (designation, institution, areas of expertise, qualifications and relevant experience)."
+        ></textarea>
         <small>Maximum 2,500 characters.</small>
       </div>
 
-      <!-- Optional advance PPTX upload -->
+      <!-- Optional PPTX upload -->
       <div class="full">
-        <label for="presentationFile">PPTX Presentation (if prepared; optional)</label>
-        <input id="presentationFile" type="file" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation">
-        <small>Please upload your PowerPoint presentation in advance, if available. PPTX only; maximum file size 10 MB.</small>
+        <label for="presentationFile">
+          PPTX Presentation (if prepared; optional)
+        </label>
+        <input
+          id="presentationFile"
+          type="file"
+          accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        >
+        <small>
+          Please upload your PowerPoint presentation in advance, if available.
+          PPTX only; maximum file size 10 MB.
+        </small>
         <p id="presentationFileName" class="file-note"></p>
       </div>
 
-      <!-- Speaker Signature -->
+      <!-- Speaker signature -->
       <div class="full">
         <label>Speaker Signature</label>
         <div class="signatureBox">
           <canvas id="signature" width="1200" height="300"></canvas>
+
           <div class="buttons">
-            <button type="button" class="light" onclick="clearSignature()">Clear</button>
-            <label class="uploadBtn">Upload Signature Image
-              <input type="file" id="signatureFile" accept="image/png,image/jpeg,image/webp" onchange="loadImage(event)">
+            <button
+              type="button"
+              class="light"
+              onclick="clearSignature()"
+            >
+              Clear
+            </button>
+
+            <label class="uploadBtn">
+              Upload Signature Image
+              <input
+                type="file"
+                id="signatureFile"
+                accept="image/png,image/jpeg,image/webp"
+                onchange="loadImage(event)"
+              >
             </label>
           </div>
-          <small>Draw using mouse/touch/stylus or upload a PNG/JPG/WebP signature.</small>
+
+          <small>
+            Draw using mouse/touch/stylus or upload a PNG/JPG/WebP signature.
+          </small>
         </div>
       </div>
 
     </div>
 
+    <!-- Form actions -->
     <div class="actions no-print">
-      <button id="saveBtn" type="submit" class="primary">💾 Save Speaker Record</button>
-      <button id="printBtn" type="button" class="printBtn" onclick="printForm()">🖨️ Print / Save as PDF</button>
-      <button type="button" class="light" onclick="resetForm()">↺ Clear Form</button>
+      <button id="saveBtn" type="submit" class="primary">
+        💾 Save Speaker Record
+      </button>
+
+      <button
+        id="printBtn"
+        type="button"
+        class="printBtn"
+        onclick="printForm()"
+      >
+        🖨️ Print / Save as PDF
+      </button>
+
+      <button
+        type="button"
+        class="light"
+        onclick="resetForm()"
+      >
+        ↺ Clear Form
+      </button>
     </div>
 
     <div id="status" class="no-print"></div>
   </form>
 </main>
 
+<!-- Keep the existing JavaScript file -->
 <script src="script.js"></script>
 
+<!-- Role-based date and session fields -->
 <script>
 function updateDateMode() {
   const role = document.getElementById("role").value;
+
   const usesDateRange = [
     "Resource Person",
     "Course Director",
     "Assistant Course Director"
   ].includes(role);
 
-  document.getElementById("presentationDateWrap").classList.toggle("hidden", usesDateRange);
-  document.getElementById("sessionTimingWrap").classList.toggle("hidden", usesDateRange);
-  document.getElementById("fromDateWrap").classList.toggle("hidden", !usesDateRange);
-  document.getElementById("toDateWrap").classList.toggle("hidden", !usesDateRange);
+  document.getElementById("presentationDateWrap")
+    .classList.toggle("hidden", usesDateRange);
+
+  document.getElementById("sessionTimingWrap")
+    .classList.toggle("hidden", usesDateRange);
+
+  document.getElementById("fromDateWrap")
+    .classList.toggle("hidden", !usesDateRange);
+
+  document.getElementById("toDateWrap")
+    .classList.toggle("hidden", !usesDateRange);
 
   document.getElementById("presentationDate").required = !usesDateRange;
   document.getElementById("sessionStartTime").required = !usesDateRange;
@@ -351,7 +552,7 @@ function updateDateMode() {
 }
 </script>
 
-<!-- Personal link initializer -->
+<!-- Personal-link initializer: ?rp=Name&workshop=WorkshopTitle -->
 <script>
 (function () {
   const params = new URLSearchParams(window.location.search);
