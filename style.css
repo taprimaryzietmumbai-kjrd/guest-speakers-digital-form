@@ -67,6 +67,32 @@ canvas{display:block;width:100%;height:190px;background:#fff;border:1px solid #c
   .signatureBox{border:1px solid #aaa;padding:8px}
   canvas{height:125px;border:1px solid #aaa}
   .buttons,.no-print{display:none!important}
+  
+/* Full-width layout for the 10 reflective response fields */
+#speakerForm .grid > .full {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+#speakerForm .grid > .full textarea {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  min-height: 110px;
+  resize: vertical;
+}
+
+/* Keep labels aligned with their full-width textareas */
+#speakerForm .grid > .full label {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
   small{font-size:9px}
 }
 
