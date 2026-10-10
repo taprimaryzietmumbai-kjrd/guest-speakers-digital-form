@@ -22,6 +22,39 @@ canvas{display:block;width:100%;height:190px;background:#fff;border:1px solid #c
 #status.ok{display:block;background:#dcfce7;color:#166534}#status.err{display:block;background:#fee2e2;color:#991b1b}
 @media(max-width:720px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.hero h1{font-size:24px}}
 
+/* Make all 10 reflective multiline fields use the full form width */
+#attitudinalChange1,
+#attitudinalChange2,
+#attitudinalChange3,
+#attitudinalChange4,
+#attitudinalChange5,
+#skill1,
+#skill2,
+#skill3,
+#skill4,
+#skill5 {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-height: 110px;
+  resize: vertical;
+}
+
+/* Ensure the parent field containers span the full grid width */
+#attitudinalChange1,
+#attitudinalChange2,
+#attitudinalChange3,
+#attitudinalChange4,
+#attitudinalChange5,
+#skill1,
+#skill2,
+#skill3,
+#skill4,
+#skill5 {
+  grid-column: 1 / -1;
+}
+
 @media print{
   @page{size:A4 portrait;margin:12mm}
   body{background:#fff;font-size:11px}
