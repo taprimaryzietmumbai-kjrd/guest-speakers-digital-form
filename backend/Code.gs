@@ -313,8 +313,11 @@ function sendInvitationEmail_(data) {
     'ZIET Mumbai'
   ].join('\n');
 
+  // Send the invitation to the speaker and copy the coordinator for delivery confirmation.
+  const coordinatorCopy = 'tarpimaryzietmumbai@gmail.com';
   MailApp.sendEmail({
     to: speakerEmail,
+    cc: coordinatorCopy,
     subject: subject,
     body: body,
     name: 'ZIET Mumbai — Guest Speakers Digital Form'
@@ -324,7 +327,8 @@ function sendInvitationEmail_(data) {
     ok: true,
     emailSent: true,
     recipient: speakerEmail,
-    message: 'Invitation email sent to ' + speakerEmail + '.'
+    copiedTo: coordinatorCopy,
+    message: 'Invitation email sent to ' + speakerEmail + '; copy sent to ' + coordinatorCopy + '.'
   });
 }
 
