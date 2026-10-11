@@ -272,6 +272,7 @@ function sendInvitationEmail_(data) {
   const speakerEmail = clean_(data.speakerEmail || data.email);
   const workshopTitle = clean_(data.workshopTitle);
   const targetGroup = clean_(data.targetGroup);
+  const role = clean_(data.role || data.speakerRole);
   const speakerLink = clean_(data.speakerLink || data.shareUrl);
   const whatsapp = clean_(data.speakerWhatsapp || data.whatsapp);
   const sessionTitle = clean_(data.sessionTitle);
@@ -284,6 +285,7 @@ function sendInvitationEmail_(data) {
   }
   if (!workshopTitle) throw new Error('Workshop Title is required for the invitation.');
   if (!targetGroup) throw new Error('Target Group is required for the invitation.');
+  if (!ALLOWED_ROLES.includes(role)) throw new Error('Select a valid Role of the Speaker in the coordinator app.');
   if (!/^https:\/\//i.test(speakerLink) || speakerLink.indexOf('/speaker.html') === -1) {
     throw new Error('The personalised speaker form link is invalid.');
   }
@@ -296,6 +298,7 @@ function sendInvitationEmail_(data) {
     workshopTitle,
     '',
     'Target Group: ' + targetGroup,
+    'Role of the Speaker: ' + role,
     'Session Title for the Speaker: ' + sessionTitle,
     'Mutually Agreed Presentation Date: ' + agreedDate,
     'Mutually Agreed Presentation Time Slot: ' + agreedTimeSlot,
