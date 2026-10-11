@@ -94,6 +94,13 @@ function doPost(e) {
     }
 
     const data = JSON.parse(e.postData.contents);
+
+    // Coordinator-triggered invitation email. Keep this action separate from
+    // the existing speaker-record submission workflow below.
+    if (data.action === 'sendInvitation') {
+      return sendInvitationEmail_(data);
+    }
+
     const workshopTitle = clean_(data.workshopTitle);
     const targetGroup = clean_(data.targetGroup);
     const speakerName = clean_(data.name);
@@ -256,6 +263,60 @@ function doPost(e) {
       error: error.message || String(error)
     });
   }
+}
+
+
+/** Sends a personalised invitation when the coordinator generates a speaker link. */
+function sendInvitationEmail_(data) {
+  const speakerName = clean_(data.speakerName || data.name);
+  const speakerEmail = clean_(data.speakerEmail || data.email);
+  const workshopTitle = clean_(data.workshopTitle);
+  const targetGroup = clean_(data.targetGroup);
+  const speakerLink = clean_(data.speakerLink || data.shareUrl);
+  const whatsapp = clean_(data.speakerWhatsapp || data.whatsapp);
+
+  if (!speakerName) throw new Error('Speaker name is required for the invitation.');
+  if (!speakerEmail || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(speakerEmail)) {
+    throw new Error('Enter a valid speaker email address to send the invitation automatically.');
+  }
+  if (!workshopTitle) throw new Error('Workshop Title is required for the invitation.');
+  if (!targetGroup) throw new Error('Target Group is required for the invitation.');
+  if (!/^https:\\/\\//i.test(speakerLink) || speakerLink.indexOf('/speaker.html') === -1) {
+    throw new Error('The personalised speaker form link is invalid.');
+  }
+
+  const subject = 'ZIET Mumbai — Guest Speaker Invitation: ' + workshopTitle;
+  const body = [
+    'Dear ' + speakerName + ',',
+    '',
+    'Please complete the ZIET Mumbai Guest Speaker Digital Form for the workshop:',
+    workshopTitle,
+    '',
+    'Target Group: ' + targetGroup,
+    whatsapp ? 'WhatsApp: ' + whatsapp : '',
+    '',
+    'Open your personalised form here:',
+    speakerLink,
+    '',
+    'Please use this personalised link to complete your speaker details and submit the form.',
+    '',
+    'Regards,',
+    'ZIET Mumbai'
+  ].join('\\n');
+
+  MailApp.sendEmail({
+    to: speakerEmail,
+    subject: subject,
+    body: body,
+    name: 'ZIET Mumbai — Guest Speakers Digital Form'
+  });
+
+  return jsonResponse_({
+    ok: true,
+    emailSent: true,
+    recipient: speakerEmail,
+    message: 'Invitation email sent to ' + speakerEmail + '.'
+  });
 }
 
 /** Sends a notification email after the record has been saved. */
