@@ -61,8 +61,28 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
 <input id="speakerWhatsapp" inputmode="tel" placeholder="Country code + number">
 </div>
 <div class="full">
-<label for="speakerEmail">Speaker's email address</label>
+<label for="speakerEmail">Email of the Speaker *</label>
 <input id="speakerEmail" type="email" required placeholder="speaker@example.org">
+</div>
+<div class="full">
+<label for="sessionTitle">Session Title for the Speaker *</label>
+<input id="sessionTitle" required maxlength="250" placeholder="Enter the speaker's agreed session title">
+</div>
+<div>
+<label for="agreedDate">Mutually Agreed Presentation Date *</label>
+<input id="agreedDate" type="date" required>
+</div>
+<div>
+<label for="agreedTimeSlot">Mutually Agreed Presentation Time Slot *</label>
+<select id="agreedTimeSlot" required>
+<option value="">Select agreed time slot</option>
+<option value="9:00 AM – 10:30 AM">9:00 AM – 10:30 AM</option>
+<option value="10:45 AM – 12:15 PM">10:45 AM – 12:15 PM</option>
+<option value="11:30 AM – 1:00 PM">11:30 AM – 1:00 PM</option>
+<option value="2:00 PM – 3:30 PM">2:00 PM – 3:30 PM</option>
+<option value="3:45 PM – 5:15 PM">3:45 PM – 5:15 PM</option>
+<option value="Other">Other</option>
+</select>
 </div>
 </div>
 <div class="actions">
@@ -73,7 +93,7 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
 </section>
 <section class="card" id="sharePanel">
 <h2 style="margin-top:0">Speaker Link Ready</h2>
-<p class="note">The workshop title and target group are embedded in this link and will be hidden on the speaker's form. The speaker's name will also be prefilled.</p>
+<p class="note">The workshop, target group, speaker name, session title and agreed presentation slot are embedded in the personalised link.</p>
 <label for="generatedLink">Personalised form link</label>
 <input id="generatedLink" readonly>
 <div class="actions">
@@ -88,7 +108,7 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
 <h3 style="margin-top:0">Coordinator workflow</h3>
 <ol class="note">
 <li>Enter the workshop title and target group.</li>
-<li>Enter one speaker's name and contact details.</li>
+<li>Enter the speaker's name, WhatsApp number, email, session title, agreed date and time slot.</li>
 <li>Generate the personal link to send the invitation email automatically; use WhatsApp to share the link as well if needed.</li>
 <li>Repeat for each speaker so each receives a link with their own name.</li>
 </ol>
@@ -112,6 +132,9 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
     url.searchParams.set("workshop", title);
     url.searchParams.set("tg", target);
     url.searchParams.set("rp", name);
+    url.searchParams.set("st", document.getElementById("sessionTitle").value.trim());
+    url.searchParams.set("pd", document.getElementById("agreedDate").value);
+    url.searchParams.set("ts", document.getElementById("agreedTimeSlot").value);
     return url.toString();
   }
 
@@ -127,13 +150,16 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
     const target = document.getElementById("targetGroup").value;
     const phone = document.getElementById("speakerWhatsapp").value.replace(/[^0-9]/g,"");
     const email = document.getElementById("speakerEmail").value.trim();
+    const sessionTitle = document.getElementById("sessionTitle").value.trim();
+    const agreedDate = document.getElementById("agreedDate").value;
+    const agreedTimeSlot = document.getElementById("agreedTimeSlot").value;
 
     shareUrl = makeLink();
     linkField.value = shareUrl;
     panel.classList.add("show");
     document.getElementById("openBtn").href = shareUrl;
 
-    const message = "Dear " + name + ",\n\nPlease complete the ZIET Mumbai Guest Speaker Digital Form for the workshop: " + title + ".\nTarget Group: " + target + "\n\nOpen your personalised form here: " + shareUrl + "\n\nRegards,\nZIET Mumbai";
+    const message = "Dear " + name + ",\n\nPlease complete the ZIET Mumbai Guest Speaker Digital Form for the workshop: " + title + ".\nTarget Group: " + target + "\nSession Title: " + sessionTitle + "\nMutually Agreed Presentation Date: " + agreedDate + "\nMutually Agreed Presentation Time Slot: " + agreedTimeSlot + "\n\nOpen your personalised form here: " + shareUrl + "\n\nRegards,\nZIET Mumbai";
     document.getElementById("whatsappBtn").href = phone ? "https://wa.me/" + phone + "?text=" + encodeURIComponent(message) : "https://wa.me/?text=" + encodeURIComponent(message);
     document.getElementById("whatsappBtn").style.display = phone ? "inline-block" : "none";
     document.getElementById("emailBtn").style.display = "none";
@@ -152,7 +178,10 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
           speakerWhatsapp: phone,
           workshopTitle: title,
           targetGroup: target,
-          speakerLink: shareUrl
+          speakerLink: shareUrl,
+          sessionTitle: sessionTitle,
+          agreedDate: agreedDate,
+          agreedTimeSlot: agreedTimeSlot
         })
       });
       const result = await response.json();
