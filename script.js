@@ -464,6 +464,8 @@ document.getElementById("speakerForm").addEventListener("submit", async e => {
 
     targetGroup:
       document.getElementById("targetGroup").value,
+    sessionTitle:
+      (document.getElementById("sessionTitle")?.value || "").trim(),
 
     name:
       document.getElementById("name").value.trim(),
