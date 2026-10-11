@@ -29,6 +29,16 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
 </style>
 </head>
 <body>
+<script>
+(function () {
+  // Backward compatibility: personalised WhatsApp links generated before the speaker page
+  // was separated may still point to the root URL.
+  if (window.location.search && /(?:^|[?&])(?:workshop|title)=/i.test(window.location.search)) {
+    window.location.replace("speaker.html" + window.location.search + window.location.hash);
+  }
+})();
+</script>
+
 <main class="container">
 <header class="hero">
 <div class="badge">KENDRIYA VIDYALAYA SANGATHAN · ZIET MUMBAI</div>
