@@ -130,6 +130,7 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
     url.searchParams.set("workshop", title);
     url.searchParams.set("tg", target);
     url.searchParams.set("rp", name);
+    url.searchParams.set("wa", document.getElementById("speakerWhatsapp").value.trim());
     url.searchParams.set("st", document.getElementById("sessionTitle").value.trim());
     url.searchParams.set("pd", document.getElementById("agreedDate").value);
     url.searchParams.set("ts", document.getElementById("agreedTimeSlot").value);
