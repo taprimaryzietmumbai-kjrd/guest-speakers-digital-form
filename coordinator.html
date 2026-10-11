@@ -57,6 +57,17 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
 <input id="speakerName" required maxlength="150" placeholder="Enter speaker's full name">
 </div>
 <div>
+<label for="speakerRole">Role of the Speaker *</label>
+<select id="speakerRole" required>
+<option value="">Select Role</option>
+<option>Course Director</option>
+<option>Assistant Course Director</option>
+<option>Resource Person</option>
+<option>Internal Speaker</option>
+<option>Guest Speaker</option>
+</select>
+</div>
+<div>
 <label for="speakerWhatsapp">Speaker's WhatsApp number</label>
 <input id="speakerWhatsapp" inputmode="tel" placeholder="Country code + number">
 </div>
@@ -130,6 +141,7 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
     url.searchParams.set("workshop", title);
     url.searchParams.set("tg", target);
     url.searchParams.set("rp", name);
+    url.searchParams.set("role", document.getElementById("speakerRole").value);
     url.searchParams.set("wa", document.getElementById("speakerWhatsapp").value.trim());
     url.searchParams.set("st", document.getElementById("sessionTitle").value.trim());
     url.searchParams.set("pd", document.getElementById("agreedDate").value);
@@ -145,6 +157,7 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
 
     const submitButton = form.querySelector('button[type="submit"]');
     const name = document.getElementById("speakerName").value.trim();
+    const role = document.getElementById("speakerRole").value;
     const title = document.getElementById("workshopTitle").value.trim();
     const target = document.getElementById("targetGroup").value;
     const phone = document.getElementById("speakerWhatsapp").value.replace(/[^0-9]/g,"");
@@ -174,6 +187,8 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
           action: "sendInvitation",
           speakerName: name,
           name: name,
+          role: role,
+          speakerRole: role,
           speakerEmail: email,
           speakerWhatsapp: phone,
           workshopTitle: title,
