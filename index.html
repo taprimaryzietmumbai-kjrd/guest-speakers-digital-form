@@ -53,6 +53,17 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
 </select>
 </div>
 <div>
+<label for="speakerOrganization">Select Organization *</label>
+<select id="speakerOrganization" required>
+<option value="">Select Organization</option>
+<option>IIT</option><option>IIM</option><option>BTTC</option><option>MU</option><option>HBCSE</option><option>SNDTU</option><option>KVS</option><option>TIFR</option><option>TISS</option><option>CETE, TISS</option><option>HBCSE, TIFR</option><option>Somaiya Vidyavihar University</option><option>K J Somaiya College of Science and Commerce</option><option>Sir J. J. School of Art, Architecture and Design</option><option>University of Mumbai</option><option>Nalanda Nritya Kala Mahavidyalaya</option><option>Others</option>
+</select>
+</div>
+<div id="otherOrganizationWrap" class="hidden">
+<label for="otherOrganization">Type Organization *</label>
+<input id="otherOrganization" maxlength="150" placeholder="Enter the organization name">
+</div>
+<div>
 <label for="speakerName">Name of the Speaker *</label>
 <input id="speakerName" required maxlength="150" placeholder="Enter speaker's full name">
 </div>
@@ -128,6 +139,17 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
 (function(){
   const BASE_URL = "https://taprimaryzietmumbai-kjrd.github.io/guest-speakers-digital-form/speaker.html";
   const form = document.getElementById("builderForm");
+  const organizationSelect = document.getElementById("speakerOrganization");
+  const otherOrganizationWrap = document.getElementById("otherOrganizationWrap");
+  const otherOrganizationInput = document.getElementById("otherOrganization");
+  function updateOtherOrganization(){
+    const show = organizationSelect.value === "Others";
+    otherOrganizationWrap.classList.toggle("hidden", !show);
+    otherOrganizationInput.required = show;
+    if (!show) otherOrganizationInput.value = "";
+  }
+  organizationSelect.addEventListener("change", updateOtherOrganization);
+  updateOtherOrganization();
   const panel = document.getElementById("sharePanel");
   const linkField = document.getElementById("generatedLink");
   const status = document.getElementById("status");
@@ -135,12 +157,22 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
 
   function makeLink(){
     const title = document.getElementById("workshopTitle").value.trim();
+    if (organizationSelect.value === "Others" && !otherOrganizationInput.value.trim()) {
+      otherOrganizationInput.setCustomValidity("Please type the organization name.");
+      otherOrganizationInput.reportValidity();
+      otherOrganizationInput.setCustomValidity("");
+      throw new Error("Please type the organization name when Others is selected.");
+    }
     const target = document.getElementById("targetGroup").value;
     const name = document.getElementById("speakerName").value.trim();
     const url = new URL(BASE_URL);
     url.searchParams.set("workshop", title);
     url.searchParams.set("tg", target);
     url.searchParams.set("rp", name);
+    const organizationChoice = document.getElementById("speakerOrganization").value;
+    const otherOrganization = document.getElementById("otherOrganization").value.trim();
+    url.searchParams.set("org", organizationChoice);
+    url.searchParams.set("orgOther", otherOrganization);
     url.searchParams.set("role", document.getElementById("speakerRole").value);
     url.searchParams.set("wa", document.getElementById("speakerWhatsapp").value.trim());
     url.searchParams.set("st", document.getElementById("sessionTitle").value.trim());
