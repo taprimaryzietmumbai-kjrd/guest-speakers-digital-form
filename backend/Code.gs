@@ -308,7 +308,7 @@ function sendInvitationEmail_(data) {
     '',
     'Regards,',
     'ZIET Mumbai'
-  ].join('\\n');
+  ].join('\n');
 
   MailApp.sendEmail({
     to: speakerEmail,
