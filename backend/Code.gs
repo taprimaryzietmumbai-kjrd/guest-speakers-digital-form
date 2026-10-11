@@ -120,7 +120,7 @@ function doPost(e) {
     const sessionStartTime = clean_(data.sessionStartTime);
     const sessionEndTime = clean_(data.sessionEndTime);
     const briefProfile = clean_(data.briefProfile);
-    const usesDateRange = ['Resource Person', 'Course Director', 'Assistant Course Director'].includes(role);
+    const usesDateRange = !data.adminFixedSchedule && ['Resource Person', 'Course Director', 'Assistant Course Director'].includes(role);
 
     // Course Directors, Assistant Course Directors and Resource Persons use a date range.
     if (usesDateRange) {
