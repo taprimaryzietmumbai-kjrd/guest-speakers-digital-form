@@ -24,7 +24,7 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
 #sharePanel{display:none}#sharePanel.show{display:block}
 #generatedLink{font-size:14px;overflow-wrap:anywhere;background:#f8fafc}
 .note{font-size:13px;line-height:1.6;color:#475569}
-#status{margin-top:12px;font-weight:700;line-height:1.5}
+#status{margin-top:16px;padding:14px 16px;border-radius:10px;font-weight:800;line-height:1.6;background:#f1f5f9;border:1px solid #cbd5e1;white-space:pre-line}#status.success{background:#dcfce7;border-color:#86efac;color:#166534}#status.error{background:#fee2e2;border-color:#fca5a5;color:#991b1b}#status.pending{background:#dbeafe;border-color:#93c5fd;color:#1e40af}
 @media(max-width:600px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.card{padding:17px}.actions>*{flex:1;text-align:center}}
 </style>
 </head>
@@ -178,7 +178,8 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
 
     submitButton.disabled = true;
     submitButton.textContent = "Sending invitation email…";
-    status.textContent = "Sending the personalised invitation to " + email + "…";
+    status.className = "pending";
+    status.textContent = "⏳ SENDING INVITATION EMAIL…\nTo: " + email + "\nA copy will also be sent to tarpimaryzietmumbai@gmail.com.";
 
     try {
       const response = await fetch(APPS_SCRIPT_URL, {
@@ -203,9 +204,11 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
       if (!response.ok || !result.ok || !result.emailSent) {
         throw new Error(result.error || result.message || "The invitation email could not be confirmed.");
       }
-      status.textContent = "Invitation email sent successfully to " + email + ". The personalised link is ready below.";
+      status.className = "success";
+      status.textContent = "✓ INVITATION EMAIL SENT\nTo: " + (result.recipient || email) + "\nCopy (CC): " + (result.copiedTo || "Coordinator copy not reported") + "\nThe personalised link is ready below.";
     } catch (error) {
-      status.textContent = "The link was generated, but the invitation email was not confirmed. " + (error.message || "Please check Apps Script deployment and email authorisation.") + " You can still share the link using WhatsApp below.";
+      status.className = "error";
+      status.textContent = "⚠ EMAIL NOT CONFIRMED\nThe link was generated, but the server did not confirm email sending. " + (error.message || "Check Apps Script deployment, authorisation and Executions.") + "\nYou can still share the link using WhatsApp below.";
     } finally {
       submitButton.disabled = false;
       submitButton.textContent = "Generate Link & Send Invitation Email";
