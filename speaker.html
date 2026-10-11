@@ -581,6 +581,7 @@ function updateDateMode() {
     return "";
   }
   const speakerName = getParam(["rp", "speaker"]);
+  const speakerRole = getParam(["role", "speakerRole"]);
   const speakerWhatsapp = getParam(["wa", "whatsapp"]);
   const workshopTitle = getParam(["workshop", "title"]);
   const targetGroup = getParam(["tg", "targetGroup", "target"]);
@@ -601,6 +602,7 @@ function updateDateMode() {
     const form = document.getElementById("speakerForm");
     const accessNotice = document.getElementById("accessNotice");
     const nameField = document.getElementById("name");
+    const roleField = document.getElementById("role");
     const whatsappField = document.getElementById("whatsapp");
     const dateField = document.getElementById("presentationDate");
     const startTimeField = document.getElementById("sessionStartTime");
@@ -638,6 +640,12 @@ function updateDateMode() {
     }
     titleField.value = workshopTitle;
     targetField.value = targetGroup;
+    if (roleField && speakerRole) {
+      roleField.value = speakerRole;
+      roleField.disabled = true;
+      roleField.style.backgroundColor = "#f1f5f9";
+      roleField.style.cursor = "not-allowed";
+    }
 
     // Coordinator-owned identity/contact/schedule fields are prefilled and locked.
     if (whatsappField && speakerWhatsapp) {
