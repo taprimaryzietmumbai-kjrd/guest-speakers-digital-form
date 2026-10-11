@@ -212,6 +212,14 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
           " Check that the web app is deployed for access by the intended users and that the /exec URL is current."
         );
       }
+      if (result && result.message === "Guest Speakers API is running.") {
+        throw new Error(
+          "The configured Apps Script URL is reaching a different or outdated deployment. " +
+          "That deployment only returned its health-check message; it did not process the sendInvitation action. " +
+          "Deploy the latest backend/Code.gs in the Apps Script project whose Web App URL is configured in this page, " +
+          "then update the page's Apps Script URL if the deployment belongs to a different project."
+        );
+      }
       if (!response.ok || !result.ok || !result.emailSent) {
         throw new Error(
           "Apps Script response (HTTP " + response.status + "): " +
