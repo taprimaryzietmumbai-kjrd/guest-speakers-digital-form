@@ -557,12 +557,30 @@ function updateDateMode() {
 <!-- Participant mode: workshop and target group are supplied by the coordinator link -->
 <script>
 (function () {
-  // Tolerate a stray backslash before query separators in links copied through messaging apps.
-  const queryString = window.location.search.replace(/\\&/g, "&");
+  // Read personalised-link parameters robustly, including links copied from WhatsApp.
+  const rawQuery = (window.location.href.split("?")[1] || "").split("#")[0];
+  const queryString = rawQuery.replace(/\\&/g, "&").replace(/&amp;/gi, "&");
   const params = new URLSearchParams(queryString);
-  const speakerName = (params.get("rp") || "").trim();
-  const workshopTitle = (params.get("workshop") || "").trim();
-  const targetGroup = (params.get("tg") || "").trim();
+  function getParam(keys) {
+    for (const key of keys) {
+      const value = params.get(key);
+      if (value && value.trim()) return value.trim();
+    }
+    // Fallback parser for messaging clients that alter query separators.
+    for (const key of keys) {
+      const marker = key + "=";
+      const pieces = rawQuery.split(/[&\\]/);
+      for (const piece of pieces) {
+        if (piece.startsWith(marker)) {
+          try { return decodeURIComponent(piece.slice(marker.length).replace(/\+/g, " ")).trim(); } catch (e) {}
+        }
+      }
+    }
+    return "";
+  }
+  const speakerName = getParam(["rp", "speaker"]);
+  const workshopTitle = getParam(["workshop", "title"]);
+  const targetGroup = getParam(["tg", "targetGroup", "target"]);
 
   function initialisePersonalLink() {
     const form = document.getElementById("speakerForm");
@@ -579,7 +597,7 @@ function updateDateMode() {
     if (titleField) titleField.required = false;
     if (targetField) targetField.required = false;
 
-    const configured = Boolean(speakerName && workshopTitle && targetGroup);
+    const configured = Boolean(workshopTitle && targetGroup);
     if (!configured) {
       const notice = document.createElement("div");
       notice.className = "card";
@@ -591,11 +609,13 @@ function updateDateMode() {
       return;
     }
 
-    if (nameField) {
+    if (nameField && speakerName) {
       nameField.value = speakerName;
       nameField.readOnly = true;
       nameField.style.backgroundColor = "#f1f5f9";
       nameField.style.cursor = "not-allowed";
+    } else if (nameField) {
+      nameField.readOnly = false;
     }
     titleField.value = workshopTitle;
     targetField.value = targetGroup;
