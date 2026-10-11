@@ -329,7 +329,9 @@ function updateDateMode() {
 
   const role = roleElement.value;
 
-  const usesDateRange = [
+  const dateField = document.getElementById("presentationDate");
+  const adminFixedSchedule = Boolean(dateField && dateField.dataset.fixedByAdmin === "true");
+  const usesDateRange = !adminFixedSchedule && [
     "Resource Person",
     "Course Director",
     "Assistant Course Director"
@@ -490,6 +492,11 @@ document.getElementById("speakerForm").addEventListener("submit", async e => {
       document.getElementById("pan").value.trim().toUpperCase(),
 
     role,
+
+    adminFixedSchedule: Boolean(
+      document.getElementById("presentationDate") &&
+      document.getElementById("presentationDate").dataset.fixedByAdmin === "true"
+    ),
 
     presentationDate:
       usesDateRange ? "" : presentationDate,
