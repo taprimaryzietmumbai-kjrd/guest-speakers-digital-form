@@ -274,6 +274,9 @@ function sendInvitationEmail_(data) {
   const targetGroup = clean_(data.targetGroup);
   const speakerLink = clean_(data.speakerLink || data.shareUrl);
   const whatsapp = clean_(data.speakerWhatsapp || data.whatsapp);
+  const sessionTitle = clean_(data.sessionTitle);
+  const agreedDate = clean_(data.agreedDate);
+  const agreedTimeSlot = clean_(data.agreedTimeSlot);
 
   if (!speakerName) throw new Error('Speaker name is required for the invitation.');
   if (!speakerEmail || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(speakerEmail)) {
@@ -293,6 +296,9 @@ function sendInvitationEmail_(data) {
     workshopTitle,
     '',
     'Target Group: ' + targetGroup,
+    'Session Title for the Speaker: ' + sessionTitle,
+    'Mutually Agreed Presentation Date: ' + agreedDate,
+    'Mutually Agreed Presentation Time Slot: ' + agreedTimeSlot,
     whatsapp ? 'WhatsApp: ' + whatsapp : '',
     '',
     'Open your personalised form here:',
