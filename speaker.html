@@ -683,6 +683,9 @@ function updateDateMode() {
       }
     }
 
+    // Recalculate role/date visibility after applying the coordinator's fixed schedule.
+    if (typeof updateDateMode === "function") updateDateMode();
+
     // Only reveal the speaker form after a complete coordinator-generated link is present.
     if (accessNotice) accessNotice.classList.add("hidden");
     form.classList.remove("hidden");
