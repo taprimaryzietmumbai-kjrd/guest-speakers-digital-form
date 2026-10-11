@@ -557,7 +557,9 @@ function updateDateMode() {
 <!-- Participant mode: workshop and target group are supplied by the coordinator link -->
 <script>
 (function () {
-  const params = new URLSearchParams(window.location.search);
+  // Tolerate a stray backslash before query separators in links copied through messaging apps.
+  const queryString = window.location.search.replace(/\\&/g, "&");
+  const params = new URLSearchParams(queryString);
   const speakerName = (params.get("rp") || "").trim();
   const workshopTitle = (params.get("workshop") || "").trim();
   const targetGroup = (params.get("tg") || "").trim();
