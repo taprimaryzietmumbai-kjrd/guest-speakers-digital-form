@@ -248,9 +248,15 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
       if (result && result.message === "Guest Speakers API is running.") {
         throw new Error(
           "The configured Apps Script URL is reaching a different or outdated deployment. " +
-          "That deployment only returned its health-check message; it did not process the sendInvitation action. " +
-          "Deploy the latest backend/Code.gs in the Apps Script project whose Web App URL is configured in this page, " +
-          "then update the page's Apps Script URL if the deployment belongs to a different project."
+          "That deployment returned its health-check message instead of processing sendInvitation."
+        );
+      }
+      if (result && result.message === "Speaker record saved successfully.") {
+        throw new Error(
+          "The server processed this invitation request as a normal speaker-form submission instead of an invitation. " +
+          "This means the live Apps Script deployment does not have the current sendInvitation route, or this page is pointing to a different Apps Script project. " +
+          "Deploy the latest backend/Code.gs as a New version in the project whose URL is configured in this page. " +
+          "Do not use this response as confirmation that an invitation email was sent."
         );
       }
       if (!response.ok || !result.ok || !result.emailSent) {
