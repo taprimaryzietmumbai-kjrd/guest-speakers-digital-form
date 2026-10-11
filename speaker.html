@@ -579,13 +579,30 @@ function updateDateMode() {
     return "";
   }
   const speakerName = getParam(["rp", "speaker"]);
+  const speakerWhatsapp = getParam(["wa", "whatsapp"]);
   const workshopTitle = getParam(["workshop", "title"]);
   const targetGroup = getParam(["tg", "targetGroup", "target"]);
+  const agreedDate = getParam(["pd", "presentationDate"]);
+  const agreedTimeSlot = getParam(["ts", "timeSlot"]);
+
+  function timeRangeForSlot(slot) {
+    const ranges = {
+      "9:45 – 11:15 AM": ["09:45", "11:15"],
+      "11:30 AM – 01:00 PM": ["11:30", "13:00"],
+      "02:00 – 03:30 PM": ["14:00", "15:30"],
+      "3:45 – 5:30 PM": ["15:45", "17:30"]
+    };
+    return ranges[slot] || ["", ""];
+  }
 
   function initialisePersonalLink() {
     const form = document.getElementById("speakerForm");
     const accessNotice = document.getElementById("accessNotice");
     const nameField = document.getElementById("name");
+    const whatsappField = document.getElementById("whatsapp");
+    const dateField = document.getElementById("presentationDate");
+    const startTimeField = document.getElementById("sessionStartTime");
+    const endTimeField = document.getElementById("sessionEndTime");
     const titleField = document.getElementById("workshopTitle");
     const targetField = document.getElementById("targetGroup");
     const titleWrap = titleField && titleField.closest(".full");
@@ -619,6 +636,42 @@ function updateDateMode() {
     }
     titleField.value = workshopTitle;
     targetField.value = targetGroup;
+
+    // Coordinator-owned identity/contact/schedule fields are prefilled and locked.
+    if (whatsappField && speakerWhatsapp) {
+      whatsappField.value = speakerWhatsapp;
+      whatsappField.readOnly = true;
+      whatsappField.style.backgroundColor = "#f1f5f9";
+      whatsappField.style.cursor = "not-allowed";
+    }
+    if (dateField && agreedDate) {
+      dateField.value = agreedDate;
+      dateField.readOnly = true;
+      dateField.dataset.fixedByAdmin = "true";
+      dateField.style.backgroundColor = "#f1f5f9";
+      dateField.style.pointerEvents = "none";
+      dateField.title = "Presentation date fixed by the coordinator";
+      showDay();
+    }
+    if (agreedDate && agreedTimeSlot) {
+      const range = timeRangeForSlot(agreedTimeSlot);
+      if (startTimeField) {
+        startTimeField.value = range[0];
+        startTimeField.readOnly = true;
+        startTimeField.dataset.fixedByAdmin = "true";
+        startTimeField.style.backgroundColor = "#f1f5f9";
+        startTimeField.style.pointerEvents = "none";
+        startTimeField.title = "Session time fixed by the coordinator";
+      }
+      if (endTimeField) {
+        endTimeField.value = range[1];
+        endTimeField.readOnly = true;
+        endTimeField.dataset.fixedByAdmin = "true";
+        endTimeField.style.backgroundColor = "#f1f5f9";
+        endTimeField.style.pointerEvents = "none";
+        endTimeField.title = "Session time fixed by the coordinator";
+      }
+    }
 
     // Only reveal the speaker form after a complete coordinator-generated link is present.
     if (accessNotice) accessNotice.classList.add("hidden");
