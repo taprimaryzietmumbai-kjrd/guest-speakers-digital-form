@@ -71,7 +71,9 @@
     <p>Digital Speaker Information &amp; Presentation Record</p>
   </header>
 
-  <form id="speakerForm" class="card">
+  <section id="accessNotice" class="card"><h2>Speaker form access required</h2><p>Please ask the ZIET Mumbai coordinator to enter the workshop title and target group, then send you your personalised speaker form link. The form is available only through that link.</p></section>
+
+  <form id="speakerForm" class="card hidden">
     <div class="grid">
 
       <!-- Workshop title -->
@@ -562,6 +564,7 @@ function updateDateMode() {
 
   function initialisePersonalLink() {
     const form = document.getElementById("speakerForm");
+    const accessNotice = document.getElementById("accessNotice");
     const nameField = document.getElementById("name");
     const titleField = document.getElementById("workshopTitle");
     const targetField = document.getElementById("targetGroup");
@@ -579,7 +582,9 @@ function updateDateMode() {
       const notice = document.createElement("div");
       notice.className = "card";
       notice.innerHTML = "<h2>Speaker form link not configured</h2><p>Please ask the ZIET Mumbai coordinator to send you your personalised form link. Do not use the general website address.</p>";
-      form.parentNode.insertBefore(notice, form);
+      if (accessNotice) {
+        accessNotice.innerHTML = notice.innerHTML;
+      }
       form.classList.add("hidden");
       return;
     }
@@ -592,6 +597,10 @@ function updateDateMode() {
     }
     titleField.value = workshopTitle;
     targetField.value = targetGroup;
+
+    // Only reveal the speaker form after a complete coordinator-generated link is present.
+    if (accessNotice) accessNotice.classList.add("hidden");
+    form.classList.remove("hidden");
   }
 
   if (document.readyState === "loading") {
