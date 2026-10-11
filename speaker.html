@@ -593,6 +593,8 @@ function updateDateMode() {
   const speakerWhatsapp = getParam(["wa", "whatsapp"]);
   const workshopTitle = getParam(["workshop", "title"]);
   const targetGroup = getParam(["tg", "targetGroup", "target"]);
+  const adminOrganization = getParam(["org", "organization"]);
+  const adminOtherOrganization = getParam(["orgOther", "otherOrganization"]);
   const sessionTitle = getParam(["st", "sessionTitle", "presentationTitle"]);
   const agreedDate = getParam(["pd", "presentationDate"]);
   const agreedTimeSlot = getParam(["ts", "timeSlot"]);
@@ -619,6 +621,9 @@ function updateDateMode() {
     const titleField = document.getElementById("workshopTitle");
     const targetField = document.getElementById("targetGroup");
     const sessionTitleField = document.getElementById("sessionTitle");
+    const organizationField = document.getElementById("organization");
+    const otherOrganizationField = document.getElementById("otherOrg");
+    const otherOrganizationWrap = document.getElementById("otherWrap");
     const sessionTitleWrap = document.getElementById("sessionTitleWrap");
     const titleWrap = titleField && titleField.closest(".full");
     const targetWrap = targetField && targetField.closest(".full");
@@ -637,6 +642,23 @@ function updateDateMode() {
     } else if (sessionTitleWrap) {
       sessionTitleWrap.classList.add("hidden");
       if (sessionTitleField) sessionTitleField.required = false;
+    }
+
+    if (organizationField && adminOrganization) {
+      const matchingOption = Array.from(organizationField.options).some(option => option.value === adminOrganization || option.textContent.trim() === adminOrganization);
+      organizationField.value = matchingOption ? adminOrganization : "Others";
+      if (organizationField.value === "Others" && otherOrganizationField) {
+        otherOrganizationField.value = adminOtherOrganization || (matchingOption ? "" : adminOrganization);
+      }
+      if (typeof toggleOther === "function") toggleOther();
+      organizationField.disabled = true;
+      organizationField.style.backgroundColor = "#f1f5f9";
+      organizationField.style.cursor = "not-allowed";
+      if (otherOrganizationField && organizationField.value === "Others") {
+        otherOrganizationField.readOnly = true;
+        otherOrganizationField.style.backgroundColor = "#f1f5f9";
+        otherOrganizationField.style.cursor = "not-allowed";
+      }
     }
 
     const configured = Boolean(workshopTitle && targetGroup);
