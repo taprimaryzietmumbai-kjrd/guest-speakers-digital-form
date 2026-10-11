@@ -33,7 +33,7 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
 <header class="hero">
 <div class="badge">KENDRIYA VIDYALAYA SANGATHAN · ZIET MUMBAI</div>
 <h1>Coordinator — Speaker Form Link Builder</h1>
-<p>Complete the workshop details here first. Then generate a personalised form link for each speaker and share it by WhatsApp or email.</p>
+<p>Set the workshop details, then generate a personalised speaker link. The invitation email is sent automatically; WhatsApp sharing remains available.</p>
 </header>
 <section class="card">
 <form id="builderForm">
@@ -62,11 +62,11 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
 </div>
 <div class="full">
 <label for="speakerEmail">Speaker's email address</label>
-<input id="speakerEmail" type="email" placeholder="speaker@example.org">
+<input id="speakerEmail" type="email" required placeholder="speaker@example.org">
 </div>
 </div>
 <div class="actions">
-<button class="primary" type="submit">Generate Personalised Speaker Link</button>
+<button class="primary" type="submit">Generate Link &amp; Send Invitation Email</button>
 <button class="secondary" type="reset" id="resetBtn">Clear</button>
 </div>
 </form>
@@ -89,10 +89,10 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
 <ol class="note">
 <li>Enter the workshop title and target group.</li>
 <li>Enter one speaker's name and contact details.</li>
-<li>Generate the personal link, then share it using WhatsApp or email.</li>
+<li>Generate the personal link to send the invitation email automatically; use WhatsApp to share the link as well if needed.</li>
 <li>Repeat for each speaker so each receives a link with their own name.</li>
 </ol>
-<p class="note"><strong>Important:</strong> Share only the generated speaker link, not this coordinator page. The separate Google Sheet for coordinator/link tracking can be connected once that sheet and its Apps Script endpoint are created.</p>
+<p class="note"><strong>Important:</strong> An email address is required for automatic invitations. Submission notifications are sent to the configured ZIET Mumbai coordinator addresses.</p>
 </section>
 </main>
 <script>
@@ -115,25 +115,57 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
     return url.toString();
   }
 
-  form.addEventListener("submit", function(e){
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFLTe2XX9tIkU6T2u0gETwwkOChWQ5bZ1GQfEsvRQGnud7jBcE800w_HahdPtFtIBu/exec";
+
+  form.addEventListener("submit", async function(e){
     e.preventDefault();
     if(!form.reportValidity()) return;
-    shareUrl = makeLink();
-    linkField.value = shareUrl;
-    panel.classList.add("show");
 
+    const submitButton = form.querySelector('button[type="submit"]');
     const name = document.getElementById("speakerName").value.trim();
     const title = document.getElementById("workshopTitle").value.trim();
     const target = document.getElementById("targetGroup").value;
     const phone = document.getElementById("speakerWhatsapp").value.replace(/[^0-9]/g,"");
     const email = document.getElementById("speakerEmail").value.trim();
+
+    shareUrl = makeLink();
+    linkField.value = shareUrl;
+    panel.classList.add("show");
+    document.getElementById("openBtn").href = shareUrl;
+
     const message = "Dear " + name + ",\n\nPlease complete the ZIET Mumbai Guest Speaker Digital Form for the workshop: " + title + ".\nTarget Group: " + target + "\n\nOpen your personalised form here: " + shareUrl + "\n\nRegards,\nZIET Mumbai";
     document.getElementById("whatsappBtn").href = phone ? "https://wa.me/" + phone + "?text=" + encodeURIComponent(message) : "https://wa.me/?text=" + encodeURIComponent(message);
-    document.getElementById("emailBtn").href = "mailto:" + encodeURIComponent(email) + "?subject=" + encodeURIComponent("ZIET Mumbai — Guest Speaker Form: " + title) + "&body=" + encodeURIComponent(message);
-    document.getElementById("openBtn").href = shareUrl;
-    document.getElementById("emailBtn").style.display = email ? "inline-block" : "none";
     document.getElementById("whatsappBtn").style.display = phone ? "inline-block" : "none";
-    status.textContent = "Link generated for " + name + ".";
+    document.getElementById("emailBtn").style.display = "none";
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Sending invitation email…";
+    status.textContent = "Sending the personalised invitation to " + email + "…";
+
+    try {
+      const response = await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "sendInvitation",
+          speakerName: name,
+          speakerEmail: email,
+          speakerWhatsapp: phone,
+          workshopTitle: title,
+          targetGroup: target,
+          speakerLink: shareUrl
+        })
+      });
+      const result = await response.json();
+      if (!response.ok || !result.ok || !result.emailSent) {
+        throw new Error(result.error || result.message || "The invitation email could not be confirmed.");
+      }
+      status.textContent = "Invitation email sent successfully to " + email + ". The personalised link is ready below.";
+    } catch (error) {
+      status.textContent = "The link was generated, but the invitation email was not confirmed. " + (error.message || "Please check Apps Script deployment and email authorisation.") + " You can still share the link using WhatsApp below.";
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = "Generate Link & Send Invitation Email";
+    }
     panel.scrollIntoView({behavior:"smooth",block:"start"});
   });
 
