@@ -200,9 +200,23 @@ button,.action{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cur
           agreedTimeSlot: agreedTimeSlot
         })
       });
-      const result = await response.json();
+      const responseText = await response.text();
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (parseError) {
+        const preview = responseText.replace(/<[^>]*>/g, " ").replace(/\\s+/g, " ").trim().slice(0, 240);
+        throw new Error(
+          "Apps Script returned a non-JSON response (HTTP " + response.status + "). " +
+          (preview || "No response body was returned.") +
+          " Check that the web app is deployed for access by the intended users and that the /exec URL is current."
+        );
+      }
       if (!response.ok || !result.ok || !result.emailSent) {
-        throw new Error(result.error || result.message || "The invitation email could not be confirmed.");
+        throw new Error(
+          "Apps Script response (HTTP " + response.status + "): " +
+          (result.error || result.message || "The invitation email could not be confirmed.")
+        );
       }
       status.className = "success";
       status.textContent = "✓ INVITATION EMAIL SENT\nTo: " + (result.recipient || email) + "\nCopy (CC): " + (result.copiedTo || "Coordinator copy not reported") + "\nThe personalised link is ready below.";
