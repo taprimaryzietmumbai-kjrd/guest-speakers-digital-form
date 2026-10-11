@@ -552,35 +552,46 @@ function updateDateMode() {
 }
 </script>
 
-<!-- Personal-link initializer: ?rp=Name&workshop=WorkshopTitle -->
+<!-- Participant mode: workshop and target group are supplied by the coordinator link -->
 <script>
 (function () {
   const params = new URLSearchParams(window.location.search);
-  const speakerName = params.get("rp");
-  const workshopTitle = params.get("workshop");
+  const speakerName = (params.get("rp") || "").trim();
+  const workshopTitle = (params.get("workshop") || "").trim();
+  const targetGroup = (params.get("tg") || "").trim();
 
   function initialisePersonalLink() {
+    const form = document.getElementById("speakerForm");
     const nameField = document.getElementById("name");
     const titleField = document.getElementById("workshopTitle");
+    const targetField = document.getElementById("targetGroup");
+    const titleWrap = titleField && titleField.closest(".full");
+    const targetWrap = targetField && targetField.closest(".full");
 
-    if (speakerName && nameField) {
+    // These two coordinator-owned fields are never shown to speakers.
+    if (titleWrap) titleWrap.classList.add("hidden");
+    if (targetWrap) targetWrap.classList.add("hidden");
+    if (titleField) titleField.required = false;
+    if (targetField) targetField.required = false;
+
+    const configured = Boolean(speakerName && workshopTitle && targetGroup);
+    if (!configured) {
+      const notice = document.createElement("div");
+      notice.className = "card";
+      notice.innerHTML = "<h2>Speaker form link not configured</h2><p>Please ask the ZIET Mumbai coordinator to send you your personalised form link. Do not use the general website address.</p>";
+      form.parentNode.insertBefore(notice, form);
+      form.classList.add("hidden");
+      return;
+    }
+
+    if (nameField) {
       nameField.value = speakerName;
       nameField.readOnly = true;
       nameField.style.backgroundColor = "#f1f5f9";
       nameField.style.cursor = "not-allowed";
     }
-
-    if (workshopTitle && titleField) {
-      titleField.value = workshopTitle;
-      titleField.readOnly = true;
-      titleField.style.backgroundColor = "#f1f5f9";
-      titleField.style.cursor = "not-allowed";
-    } else if (titleField) {
-      titleField.readOnly = false;
-      titleField.style.backgroundColor = "";
-      titleField.style.cursor = "";
-      titleField.placeholder = "Enter the title of the workshop";
-    }
+    titleField.value = workshopTitle;
+    targetField.value = targetGroup;
   }
 
   if (document.readyState === "loading") {
