@@ -279,12 +279,12 @@ function sendInvitationEmail_(data) {
   const agreedTimeSlot = clean_(data.agreedTimeSlot);
 
   if (!speakerName) throw new Error('Speaker name is required for the invitation.');
-  if (!speakerEmail || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(speakerEmail)) {
+  if (!speakerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(speakerEmail)) {
     throw new Error('Enter a valid speaker email address to send the invitation automatically.');
   }
   if (!workshopTitle) throw new Error('Workshop Title is required for the invitation.');
   if (!targetGroup) throw new Error('Target Group is required for the invitation.');
-  if (!/^https:\\/\\//i.test(speakerLink) || speakerLink.indexOf('/speaker.html') === -1) {
+  if (!/^https:\/\//i.test(speakerLink) || speakerLink.indexOf('/speaker.html') === -1) {
     throw new Error('The personalised speaker form link is invalid.');
   }
 
