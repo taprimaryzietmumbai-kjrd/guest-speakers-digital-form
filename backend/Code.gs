@@ -11,7 +11,7 @@ const CONFIG = {
   SHEET_NAME: 'Guest Speakers',
   DRIVE_FOLDER_NAME: 'Guest Speakers Signatures',
   PDF_FOLDER_NAME: 'Guest Speakers PDFs',
-  EMAIL_TO: 'taprimaryzietmumbai@gmail.com,zietmumbai@gmail.com',
+  EMAIL_TO: 'taprimaryzietmumbai@gmail.com,zietmumbai@gmail.com,zietmumstaff@gmail.com',
   // Used only by doGet() for the existing workshop-title endpoint.
   TITLE_SPREADSHEET_ID: '1Uuqoz2KFpTcw9d2HI02fLmFPopTaLnKWwZ9aR-uYCeY'
 };
@@ -359,7 +359,23 @@ function sendSpeakerNotification_(data, recordId, rowNumber, pdfUrl, photoUrl, p
     '',
     'This is an automated notification from the ZIET Mumbai Guest Speakers Digital Form.'
   ].join('\n');
-  MailApp.sendEmail({ to: recipients.join(','), subject, body });
+  // Attach the final generated PDF to the notification sent to the coordinator team.
+  // pdfUrl is the Drive file URL returned by createSpeakerPdf_().
+  const pdfIdMatch = String(pdfUrl || '').match(/\/d\/([a-zA-Z0-9_-]+)/);
+  const attachments = [];
+  if (pdfIdMatch && pdfIdMatch[1]) {
+    const pdfFile = DriveApp.getFileById(pdfIdMatch[1]);
+    attachments.push(pdfFile.getBlob().setName(pdfFile.getName()));
+  } else {
+    throw new Error('The speaker PDF was generated, but its file ID could not be extracted for email attachment.');
+  }
+
+  MailApp.sendEmail({
+    to: recipients.join(','),
+    subject,
+    body,
+    attachments
+  });
 }
 
 /** Run manually to trigger/verify MailApp authorization before deployment. */
