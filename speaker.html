@@ -518,7 +518,9 @@
 function updateDateMode() {
   const role = document.getElementById("role").value;
 
-  const usesDateRange = [
+  const dateField = document.getElementById("presentationDate");
+  const adminFixedSchedule = Boolean(dateField && dateField.dataset.fixedByAdmin === "true");
+  const usesDateRange = !adminFixedSchedule && [
     "Resource Person",
     "Course Director",
     "Assistant Course Director"
