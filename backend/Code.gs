@@ -55,7 +55,8 @@ const HEADERS = [
   'Branch Name',
   'Branch Code',
   'Honorarium Amount',
-  'Honorarium Undertaking'
+  'Honorarium Undertaking',
+  'Speaker Photograph Preview'
 ];
 
 const ALLOWED_ROLES = [
@@ -155,9 +156,11 @@ function doPost(e) {
     let signatureUrl = '';
     let signatureFormula = '';
     let speakerPhotoUrl = '';
+    let speakerPhotoPreviewUrl = '';
     if (data.speakerPhotoData) {
       const savedPhoto = saveSpeakerPhoto_(data.speakerPhotoData, speakerName, recordId);
       speakerPhotoUrl = savedPhoto.url;
+      speakerPhotoPreviewUrl = savedPhoto.previewUrl;
     }
     let presentationFileUrl = '';
     if (data.presentationFileData) {
@@ -226,7 +229,8 @@ function doPost(e) {
       clean_(data.branchName),
       clean_(data.branchCode),
       clean_(data.honorariumAmount),
-      clean_(data.honorariumUndertaking)
+      clean_(data.honorariumUndertaking),
+      '' // Speaker Photograph Preview is populated with an IMAGE() formula below.
     ];
 
     if (row.length !== HEADERS.length) {
@@ -242,6 +246,10 @@ function doPost(e) {
     if (signatureFormula) {
       sheet.getRange(rowNumber, 17).setFormula(signatureFormula);
       sheet.setRowHeight(rowNumber, 90);
+    }
+    if (speakerPhotoPreviewUrl) {
+      sheet.getRange(rowNumber, 40).setFormula('=IMAGE("' + speakerPhotoPreviewUrl.replace(/"/g, '""') + '")');
+      sheet.setRowHeight(rowNumber, Math.max(sheet.getRowHeight(rowNumber), 110));
     }
 
     let emailSent = false;
@@ -486,7 +494,7 @@ function getOrCreateSheet_() {
     20: 220, 21: 220, 22: 220, 23: 220, 24: 220,
     25: 200, 26: 200, 27: 200, 28: 200, 29: 200,
     30: 150, 31: 150, 32: 260, 33: 300, 34: 300,
-    35: 180, 36: 180, 37: 150, 38: 160, 39: 420
+    35: 180, 36: 180, 37: 150, 38: 160, 39: 420, 40: 180
   };
   Object.keys(widths).forEach(column => sheet.setColumnWidth(Number(column), widths[column]));
 
@@ -555,7 +563,11 @@ function saveSpeakerPhoto_(dataUrl, speakerName, recordId) {
   );
   // Link sharing lets flyer designers retrieve the photograph; review privacy policy.
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-  return { fileId: file.getId(), url: 'https://drive.google.com/file/d/' + file.getId() + '/view' };
+  return {
+    fileId: file.getId(),
+    url: 'https://drive.google.com/file/d/' + file.getId() + '/view',
+    previewUrl: 'https://drive.google.com/uc?export=view&id=' + file.getId()
+  };
 }
 
 function getSpeakerPhotoFolder_() {
