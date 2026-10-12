@@ -50,7 +50,12 @@ const HEADERS = [
   'Session End Time',
   'Speaker Photograph URL',
   'Brief Professional Profile',
-  'PPTX Presentation URL'
+  'PPTX Presentation URL',
+  'Bank Name',
+  'Branch Name',
+  'Branch Code',
+  'Honorarium Amount',
+  'Honorarium Undertaking'
 ];
 
 const ALLOWED_ROLES = [
@@ -216,7 +221,12 @@ function doPost(e) {
       usesDateRange ? '' : sessionEndTime,
       speakerPhotoUrl,
       briefProfile,
-      presentationFileUrl
+      presentationFileUrl,
+      clean_(data.bankName),
+      clean_(data.branchName),
+      clean_(data.branchCode),
+      clean_(data.honorariumAmount),
+      clean_(data.honorariumUndertaking)
     ];
 
     if (row.length !== HEADERS.length) {
@@ -475,7 +485,8 @@ function getOrCreateSheet_() {
     16: 240, 17: 180, 18: 230, 19: 240,
     20: 220, 21: 220, 22: 220, 23: 220, 24: 220,
     25: 200, 26: 200, 27: 200, 28: 200, 29: 200,
-    30: 150, 31: 150, 32: 260, 33: 300, 34: 300
+    30: 150, 31: 150, 32: 260, 33: 300, 34: 300,
+    35: 180, 36: 180, 37: 150, 38: 160, 39: 420
   };
   Object.keys(widths).forEach(column => sheet.setColumnWidth(Number(column), widths[column]));
 
@@ -615,6 +626,11 @@ function createSpeakerPdf_(data, organization, recordId, signatureUrl) {
     ['Department / Organization', clean_(organization)],
     ['WhatsApp No.', clean_(data.whatsapp)],
     ['Bank Account', clean_(data.bank)],
+    ['Bank Name', clean_(data.bankName)],
+    ['Branch Name', clean_(data.branchName)],
+    ['Branch Code', clean_(data.branchCode)],
+    ['Honorarium Amount', data.honorariumAmount ? '₹ ' + Number(data.honorariumAmount).toLocaleString('en-IN') + '/-' : 'To be confirmed by the coordinator'],
+    ['Honorarium Undertaking', clean_(data.honorariumUndertaking)],
     ['IFSC Code', clean_(data.ifsc).toUpperCase()],
     ['UPI ID', clean_(data.upi)],
     ['PAN No.', clean_(data.pan).toUpperCase()],
