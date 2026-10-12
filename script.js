@@ -375,7 +375,14 @@ document.getElementById("speakerForm").addEventListener("submit", async e => {
 
   const role = document.getElementById("role").value;
 
-  const usesDateRange = [
+  // Match updateDateMode(): a coordinator-fixed date uses the single-date
+  // workflow even when the selected role normally uses a date range.
+  const adminFixedSchedule = Boolean(
+    document.getElementById("presentationDate") &&
+    document.getElementById("presentationDate").dataset.fixedByAdmin === "true"
+  );
+
+  const usesDateRange = !adminFixedSchedule && [
     "Resource Person",
     "Course Director",
     "Assistant Course Director"
@@ -507,10 +514,7 @@ document.getElementById("speakerForm").addEventListener("submit", async e => {
 
     role,
 
-    adminFixedSchedule: Boolean(
-      document.getElementById("presentationDate") &&
-      document.getElementById("presentationDate").dataset.fixedByAdmin === "true"
-    ),
+    adminFixedSchedule,
 
     presentationDate:
       usesDateRange ? "" : presentationDate,
