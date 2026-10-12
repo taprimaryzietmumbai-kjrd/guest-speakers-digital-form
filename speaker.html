@@ -74,6 +74,11 @@
   <section id="accessNotice" class="card"><h2>Speaker form access required</h2><p>Please ask the ZIET Mumbai coordinator to enter the workshop title and target group, then send you your personalised speaker form link. The form is available only through that link.</p></section>
 
   <form id="speakerForm" class="card hidden">
+    <div class="full section-heading">
+      <h2>Guest Speaker's Details | Honorarium Pre-receipt</h2>
+      <p>Complete your details and acknowledge receipt of the applicable honorarium.</p>
+      <p><strong>Honorarium payable:</strong> <span id="honorariumAmount">Select role to calculate</span></p>
+    </div>
     <div class="grid">
 
       <!-- Workshop title -->
@@ -204,6 +209,21 @@
       <div>
         <label for="bank">Bank Account of the Speaker</label>
         <input id="bank" inputmode="numeric">
+      </div>
+
+      <div>
+        <label for="bankName">Name of the Speaker's Bank</label>
+        <input id="bankName" maxlength="120" placeholder="Enter bank name">
+      </div>
+
+      <div>
+        <label for="branchName">Branch Name</label>
+        <input id="branchName" maxlength="120" placeholder="Enter branch name">
+      </div>
+
+      <div>
+        <label for="branchCode">Branch Code</label>
+        <input id="branchCode" maxlength="30" placeholder="Enter branch code">
       </div>
 
       <div>
@@ -456,6 +476,13 @@
         <p id="presentationFileName" class="file-note"></p>
       </div>
 
+      <div class="full section-heading" id="honorariumUndertaking">
+        <h3>Honorarium Pre-receipt — Undertaking</h3>
+        <p>I hereby acknowledge the receipt of <strong>₹ <span id="undertakingAmount">________</span></strong>
+        (Rupees <strong><span id="undertakingWords">__________________________________________</span> only</strong>)
+        as honorarium for my presentation.</p>
+      </div>
+
       <!-- Speaker signature -->
       <div class="full">
         <label>Speaker Signature</label>
@@ -590,6 +617,27 @@ function updateDateMode() {
   }
   const speakerName = getParam(["rp", "speaker"]);
   const speakerRole = getParam(["role", "speakerRole"]);
+  const HONORARIUM_BY_ROLE = {
+    "Guest Speaker": 3000,
+    "Resource Person": 1000,
+    "Internal Speaker": 1000,
+    "Assistant Course Director": 1500
+  };
+  function honorariumWords(amount) {
+    const words = {1000:"One Thousand",1500:"One Thousand Five Hundred",3000:"Three Thousand"};
+    return words[amount] || "";
+  }
+  function updateHonorarium() {
+    const role = document.getElementById("role")?.value || speakerRole;
+    const amount = HONORARIUM_BY_ROLE[role];
+    const amountText = amount ? amount.toLocaleString("en-IN") : "To be confirmed by the coordinator";
+    const amountEl = document.getElementById("honorariumAmount");
+    const undertakingAmount = document.getElementById("undertakingAmount");
+    const undertakingWords = document.getElementById("undertakingWords");
+    if (amountEl) amountEl.textContent = amount ? "₹ " + amountText + "/-" : amountText;
+    if (undertakingAmount) undertakingAmount.textContent = amount ? amountText : "________";
+    if (undertakingWords) undertakingWords.textContent = amount ? honorariumWords(amount) : "__________________________________________";
+  }
   const speakerWhatsapp = getParam(["wa", "whatsapp"]);
   const workshopTitle = getParam(["workshop", "title"]);
   const targetGroup = getParam(["tg", "targetGroup", "target"]);
@@ -614,6 +662,7 @@ function updateDateMode() {
     const accessNotice = document.getElementById("accessNotice");
     const nameField = document.getElementById("name");
     const roleField = document.getElementById("role");
+    if (roleField) roleField.addEventListener("change", updateHonorarium);
     const whatsappField = document.getElementById("whatsapp");
     const dateField = document.getElementById("presentationDate");
     const startTimeField = document.getElementById("sessionStartTime");
@@ -688,6 +737,7 @@ function updateDateMode() {
       roleField.disabled = true;
       roleField.style.backgroundColor = "#f1f5f9";
       roleField.style.cursor = "not-allowed";
+      updateHonorarium();
     }
 
     // Coordinator-owned identity/contact/schedule fields are prefilled and locked.
@@ -726,6 +776,7 @@ function updateDateMode() {
       }
     }
 
+    updateHonorarium();
     // Recalculate role/date visibility after applying the coordinator's fixed schedule.
     if (typeof updateDateMode === "function") updateDateMode();
 
