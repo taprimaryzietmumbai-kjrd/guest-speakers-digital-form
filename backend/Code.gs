@@ -439,6 +439,28 @@ function getOrCreateSheet_() {
     'Record ID'
   ];
 
+  // Repair a known intermediate layout that predates the two date-range
+  // columns. Insert before Role so existing role/signature/record data shifts
+  // right together instead of being overwritten.
+  let repairedMissingDateRangeColumns = false;
+  if (sheet.getLastRow() > 0 && sheet.getLastColumn() >= 13) {
+    const currentHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]
+      .map(value => String(value || '').trim());
+    const roleIndex = currentHeaders.indexOf('Role of the Speaker');
+    const isExpectedPreDateRangeLayout =
+      !currentHeaders.includes('Presentation From Date') &&
+      !currentHeaders.includes('Presentation To Date') &&
+      currentHeaders[0] === 'Timestamp' &&
+      currentHeaders[1] === 'Workshop Title' &&
+      currentHeaders[2] === 'Target Group' &&
+      currentHeaders[11] === 'Presentation Day & Date' &&
+      roleIndex === 12;
+    if (isExpectedPreDateRangeLayout) {
+      sheet.insertColumnsBefore(13, 2);
+      repairedMissingDateRangeColumns = true;
+    }
+  }
+
   let migratedOldLayout = false;
   if (sheet.getLastRow() > 0 && sheet.getLastColumn() >= oldHeaders.length) {
     const existingOldHeaders = sheet.getRange(1, 1, 1, oldHeaders.length).getValues()[0];
@@ -457,8 +479,8 @@ function getOrCreateSheet_() {
 
   if (sheet.getLastRow() === 0) {
     sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
-  } else if (migratedOldLayout) {
-    // Only the header row is rewritten after a recognised, explicit migration.
+  } else if (migratedOldLayout || repairedMissingDateRangeColumns) {
+    // Rewrite headers only after a recognised migration that preserves row data.
     sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
   } else {
     const existingColumnCount = Math.min(Math.max(sheet.getLastColumn(), 1), HEADERS.length);
