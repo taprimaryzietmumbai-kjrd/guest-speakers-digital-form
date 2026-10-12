@@ -308,9 +308,8 @@ function sendInvitationEmail_(data) {
     throw new Error('The personalised speaker form link is invalid.');
   }
 
-  // Apps Script email subjects have a strict size limit. Keep the subject short;
-  // the complete workshop title remains in the email body and personalised link.
-  const subject = ('ZIET Mumbai — Guest Speaker Invitation: ' + workshopTitle).substring(0, 180);
+  // Fixed short subject prevents submitted values from causing subject-size errors.
+  const subject = 'ZIET Mumbai — Guest Speaker Invitation';
   const body = [
     'Dear ' + speakerName + ',',
     '',
@@ -358,8 +357,9 @@ function sendSpeakerNotification_(data, recordId, rowNumber, pdfUrl, photoUrl, p
   if (!recipients.length) return;
   const name = clean_(data.name);
   const role = clean_(data.role);
-  // Keep notification subjects safely below MailApp's subject-size limit.
-  const subject = ('New Guest Speaker Record: ' + name + ' | ' + clean_(data.workshopTitle)).substring(0, 180);
+  // The observed post-save error is in this notification path. Use a fixed
+  // short subject so no submitted field can make the subject oversized.
+  const subject = 'ZIET Mumbai — New Guest Speaker Record';
   const dateLine = data.fromDate && data.toDate
     ? 'Presentation dates: ' + data.fromDate + ' to ' + data.toDate
     : 'Presentation date: ' + clean_(data.presentationDate) + '\nSession timing: ' + clean_(data.sessionStartTime) + ' – ' + clean_(data.sessionEndTime);
