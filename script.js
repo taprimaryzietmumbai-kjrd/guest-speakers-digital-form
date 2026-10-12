@@ -483,6 +483,18 @@ document.getElementById("speakerForm").addEventListener("submit", async e => {
 
     bank:
       document.getElementById("bank").value.trim(),
+    bankName:
+      document.getElementById("bankName").value.trim(),
+    branchName:
+      document.getElementById("branchName").value.trim(),
+    branchCode:
+      document.getElementById("branchCode").value.trim(),
+    honorariumAmount: ({"Guest Speaker":3000,"Resource Person":1000,"Internal Speaker":1000,"Assistant Course Director":1500}[role] || ""),
+    honorariumUndertaking: "I hereby acknowledge the receipt of ₹ " +
+      ({"Guest Speaker":"3,000","Resource Person":"1,000","Internal Speaker":"1,000","Assistant Course Director":"1,500"}[role] || "________") +
+      " (Rupees " +
+      ({"Guest Speaker":"Three Thousand","Resource Person":"One Thousand","Internal Speaker":"One Thousand","Assistant Course Director":"One Thousand Five Hundred"}[role] || "__________________________________________") +
+      " only) as honorarium for my presentation.",
 
     ifsc:
       document.getElementById("ifsc").value.trim().toUpperCase(),
