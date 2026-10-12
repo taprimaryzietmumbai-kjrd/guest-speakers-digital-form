@@ -1,5 +1,5 @@
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFLTe2XX9tIkU6T2u0gETwwkOChWQ5bZ1GQfEsvRQGnud7jBcE800w_HahdPtFtIBu/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxU2FvNxHsnun7ZXmWQiNc7UAYe-zArH9mYojLOQXnyhTG1R-IBkKIn0pJhoSlm-bBy/exec";
 
 let canvas, ctx, drawing = false, hasInk = false;
 let speakerPhotoData = "";
