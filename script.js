@@ -587,6 +587,9 @@ document.getElementById("speakerForm").addEventListener("submit", async e => {
 
     status(message, true);
 
+    // Optional official pre-receipt PDF; existing PDF workflow is untouched.
+    addOfficialPreReceiptOption(data);
+
     resetForm(false);
 
   } catch (error) {
@@ -626,10 +629,44 @@ function resetForm(showMessage = true) {
   }
 }
 
-/* -------------------------------------------------------
-   PRINT / SAVE AS PDF
-------------------------------------------------------- */
-
-function printForm() {
-  window.print();
+/* ADDITIONAL OPTIONAL OFFICIAL HONORARIUM PRE-RECEIPT PDF */
+function addOfficialPreReceiptOption(data) {
+  const statusElement = document.getElementById('status'); if (!statusElement) return;
+  const oldPanel = document.getElementById('officialPreReceiptOption'); if (oldPanel) oldPanel.remove();
+  const panel = document.createElement('div'); panel.id = 'officialPreReceiptOption';
+  panel.style.cssText = 'margin-top:12px;padding:12px;border:1px solid #94a3b8;border-radius:10px;background:#fff';
+  const note = document.createElement('p'); note.textContent = 'Additional option: official bilingual Pre-Receipt PDF.'; note.style.margin = '0 0 10px'; panel.appendChild(note);
+  const button = document.createElement('button'); button.type = 'button'; button.className = 'primary'; button.textContent = 'Download Official Pre-Receipt (PDF)';
+  button.addEventListener('click', () => printOfficialPreReceipt(data)); panel.appendChild(button); statusElement.insertAdjacentElement('afterend', panel);
 }
+function receiptEscape(value) { return String(value == null ? '' : value).replace(/[&<>\"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch])); }
+function receiptDate(value) { if (!value) return '________________'; const p = String(value).split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : value; }
+function printOfficialPreReceipt(data) {
+  const role = receiptEscape(data.role || '________________'); const amount = Number(data.honorariumAmount || 0);
+  const words = ({1000:'One Thousand',1500:'One Thousand Five Hundred',3000:'Three Thousand'})[amount] || '________________';
+  const amountText = amount ? amount.toLocaleString('en-IN') : '________'; const theme = receiptEscape(data.workshopTitle || ''); const speaker = receiptEscape(data.name || '');
+  const dates = data.fromDate && data.toDate ? receiptDate(data.fromDate) + ' से ' + receiptDate(data.toDate) : receiptDate(data.presentationDate);
+  const bankName = receiptEscape(data.bankName || ''); const account = receiptEscape(data.bank || '');
+  const branch = receiptEscape([data.branchName, data.branchCode].filter(Boolean).join(' / ')); const ifsc = receiptEscape(data.ifsc || '');
+  const popup = window.open('', '_blank'); if (!popup) { status('Please allow pop-ups, then select the official pre-receipt option again.', false); return; }
+  const html = [
+    '<!doctype html><html lang="hi"><head><meta charset="utf-8"><title>ZIET Mumbai — Pre-Receipt</title>',
+    '<style>@page{size:A4 portrait;margin:18mm}body{font-family:Arial,"Noto Sans Devanagari","Mangal",sans-serif;color:#111;font-size:14px;line-height:1.8}.page{min-height:255mm}h1,h2{text-align:center}h1{font-size:22px;margin-bottom:28px}h2{font-size:18px;margin:25px 0}.line{display:inline-block;min-width:180px;border-bottom:1px solid #111;min-height:22px}.long{min-width:95%}.bankrow{margin:20px 0}.value{display:inline-block;min-width:55%;min-height:22px;border-bottom:1px solid #333}.signrow{display:flex;justify-content:space-between;margin-top:35px}.rule{border:0;border-top:1px solid #333;margin:28px 0}.printbar{text-align:center;margin:15px}@media print{.printbar{display:none}}</style></head><body>',
+    '<div class="printbar"><button onclick="window.print()">Print / Save as PDF</button></div><section class="page">',
+    '<h1>पूर्व पावती / Pre-Receipt</h1>',
+    '<p>निदेशक आंचलिक शिक्षा एवं प्रशिक्षण संस्थान मुम्बई में <span class="line">' + theme + '</span> हेतु</p>',
+    '<p>थीम “<span class="line long">' + theme + '</span>” पर दिनांक <span class="line">' + receiptEscape(dates) + '</span> से/तक आयोजित</p>',
+    '<p>04 दिवसीय मुखाभिमुख कार्यशाला में <span class="line">' + role + '</span> के रूप में कार्य करने के मानदेय हेतु ₹ <span class="line">' + amountText + '/-</span> (₹ <span class="line">' + words + ' मात्र /-</span>) प्राप्त किए।</p>',
+    '<div class="signrow"><span>दिनांक : ' + receiptDate(new Date().toISOString().slice(0,10)) + '</span><span>हस्ताक्षर __________________</span></div>',
+    '<hr class="rule"><h2>बैंक खाते का विवरण / Details of Bank Account</h2>',
+    '<div class="bankrow">खाताधारक का नाम / Name of the Account Holder<br><span class="value">' + speaker + '</span></div>',
+    '<div class="bankrow">बैंक का नाम / Name of Bank : <span class="value">' + bankName + '</span></div>',
+    '<div class="bankrow">खाता संख्या / Savings Account Number : <span class="value">' + account + '</span></div>',
+    '<div class="bankrow">शाखा का नाम एवं पता / Bank Branch and Branch Code: <span class="value">' + branch + '</span></div>',
+    '<div class="bankrow">आइ.एफ.एस.सी. कोड / IFSC Code : <span class="value">' + ifsc + '</span></div>',
+    '<p>Speaker: ' + speaker + '</p></section></body></html>'
+  ].join(''); popup.document.open(); popup.document.write(html); popup.document.close(); popup.focus();
+}
+
+/* Original print option retained unchanged. */
+function printForm() { window.print(); }
