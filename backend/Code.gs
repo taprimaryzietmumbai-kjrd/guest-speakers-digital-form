@@ -333,7 +333,7 @@ function sendInvitationEmail_(data) {
   ].join('\n');
 
   // Send the invitation to the speaker and copy the coordinator for delivery confirmation.
-  const coordinatorCopy = 'tarpimaryzietmumbai@gmail.com';
+  const coordinatorCopy = 'taprimaryzietmumbai@gmail.com';
   MailApp.sendEmail({
     to: speakerEmail,
     cc: coordinatorCopy,
