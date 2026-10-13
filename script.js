@@ -631,13 +631,29 @@ function resetForm(showMessage = true) {
 
 /* ADDITIONAL OPTIONAL OFFICIAL HONORARIUM PRE-RECEIPT PDF */
 function addOfficialPreReceiptOption(data) {
-  const statusElement = document.getElementById('status'); if (!statusElement) return;
-  const oldPanel = document.getElementById('officialPreReceiptOption'); if (oldPanel) oldPanel.remove();
-  const panel = document.createElement('div'); panel.id = 'officialPreReceiptOption';
-  panel.style.cssText = 'margin-top:12px;padding:12px;border:1px solid #94a3b8;border-radius:10px;background:#fff';
-  const note = document.createElement('p'); note.textContent = 'Additional option: official bilingual Pre-Receipt PDF.'; note.style.margin = '0 0 10px'; panel.appendChild(note);
-  const button = document.createElement('button'); button.type = 'button'; button.className = 'primary'; button.textContent = 'Download Official Pre-Receipt (PDF)';
-  button.addEventListener('click', () => printOfficialPreReceipt(data)); panel.appendChild(button); statusElement.insertAdjacentElement('afterend', panel);
+  const form = document.getElementById('speakerForm');
+  if (!form) return;
+  const oldPanel = document.getElementById('officialPreReceiptOption');
+  if (oldPanel) oldPanel.remove();
+  const panel = document.createElement('section');
+  panel.id = 'officialPreReceiptOption';
+  panel.className = 'card';
+  panel.style.cssText = 'margin-top:14px;border:2px solid #0891b2;background:#f0fdff;display:block;position:relative;z-index:2';
+  const heading = document.createElement('h3');
+  heading.textContent = 'Additional Download Option';
+  heading.style.marginTop = '0';
+  panel.appendChild(heading);
+  const note = document.createElement('p');
+  note.textContent = 'Download the official bilingual Hindi–English Honorarium Pre-Receipt as a separate PDF. Your existing form PDF option remains unchanged.';
+  panel.appendChild(note);
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'primary';
+  button.textContent = 'Download Official Pre-Receipt (PDF)';
+  button.addEventListener('click', () => printOfficialPreReceipt(data));
+  panel.appendChild(button);
+  form.insertAdjacentElement('afterend', panel);
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 function receiptEscape(value) { return String(value == null ? '' : value).replace(/[&<>\"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch])); }
 function receiptDate(value) { if (!value) return '________________'; const p = String(value).split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : value; }
