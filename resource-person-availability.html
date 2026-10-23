@@ -147,6 +147,9 @@ function applyRP(){
  if(q.has('mobile')) document.getElementById('mobile').value=q.get('mobile');
  if(q.has('institution')) document.getElementById('institution').value=q.get('institution');
  if(q.has('designation')) document.getElementById('designation').value=q.get('designation');
+ if(q.has('from')) document.getElementById('from').value=q.get('from');
+ if(q.has('to')) document.getElementById('to').value=q.get('to');
+ dates();
 }
 function generateLink(){
  const p=document.getElementById('adminPerson').value.trim();if(!p)return alert('Type a Resource Person name.');
@@ -154,7 +157,10 @@ function generateLink(){
  const mobile=document.getElementById('adminMobile').value.trim();
  const institution=document.getElementById('adminInstitution').value.trim();
  const designation=document.getElementById('adminDesignation').value.trim();
- const q=new URLSearchParams({rp:p});
+ const from=document.getElementById('from').value,to=document.getElementById('to').value;
+ if(!from||!to)return alert('Set both workshop dates before generating the invitation link.');
+ if(new Date(to+'T00:00:00')<new Date(from+'T00:00:00'))return alert('To Date cannot be earlier than From Date.');
+ const q=new URLSearchParams({rp:p,from:from,to:to});
  if(email)q.set('email',email);
  if(mobile)q.set('mobile',mobile);
  if(institution)q.set('institution',institution);
