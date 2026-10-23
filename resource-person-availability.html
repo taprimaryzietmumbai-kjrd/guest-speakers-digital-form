@@ -39,10 +39,7 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 <p class="help">This add-on does not replace your existing Guest Speaker form. It is an additional availability page in the same repository.</p>
 <div class="grid">
 <div><label>Resource Person</label>
-<select id="adminPerson"><option value="">Select Resource Person</option>
-<option>Dr. Mamnoon Fatima</option><option>DR. UDAY KUMAR MISHRA</option>
-<option>DR. DINANATH MISHRA</option><option>Dr. Sachin Pardeshi</option>
-<option>Dr. Deepti Pandya</option><option>Internal Speaker</option><option>Guest Speaker</option></select></div>
+<input id="adminPerson" type="text" placeholder="Type Resource Person Name" autocomplete="name"></div>
 <div><label>Personal Link</label><input id="personalLink" readonly placeholder="Generate a personal link"></div>
 </div>
 <div class="actions">
@@ -58,10 +55,7 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 <h2>1. Resource Person Details</h2>
 <div class="grid">
 <div><label>Name *</label>
-<select id="nameSelect" required>
-<option value="">Select Resource Person</option><option>Dr. Mamnoon Fatima</option><option>DR. UDAY KUMAR MISHRA</option><option>DR. DINANATH MISHRA</option><option>Dr. Sachin Pardeshi</option><option>Dr. Deepti Pandya</option><option>Internal Speaker</option><option>Guest Speaker</option></select>
-<input id="customName" type="text" placeholder="Enter Speaker Name" style="display:none;margin-top:8px">
-<input id="name" type="hidden">
+<input id="name" type="text" placeholder="Type Resource Person Name" autocomplete="name" required>
 </div>
 <div><label>Email *</label><input id="email" type="email" required></div>
 <div><label>Mobile / WhatsApp *</label><input id="mobile" required></div>
@@ -146,47 +140,19 @@ function dates(){
 }
 document.getElementById('from').addEventListener('change',dates);document.getElementById('to').addEventListener('change',dates);
 
-function syncNameField(){
- const sel=document.getElementById('nameSelect'), custom=document.getElementById('customName'), hidden=document.getElementById('name');
- const v=sel.value;
- if(v==='Internal Speaker' || v==='Guest Speaker'){
-   custom.style.display='block';
-   custom.required=true;
-   custom.placeholder = v==='Internal Speaker' ? 'Enter Internal Speaker Name' : 'Enter Guest Speaker Name';
-   hidden.value=custom.value.trim();
- }else{
-   custom.style.display='none';
-   custom.required=false;
-   custom.value='';
-   hidden.value=v;
- }
-}
-document.getElementById('nameSelect').addEventListener('change',syncNameField);
-document.getElementById('customName').addEventListener('input',syncNameField);
-
 function applyRP(){
  const rp=new URLSearchParams(location.search).get('rp');
  document.getElementById('adminPanel').style.display=rp?'none':'block';
- if(!rp){syncNameField();return;}
- const sel=document.getElementById('nameSelect'), opt=[...sel.options].find(o=>o.value.toLowerCase()===rp.toLowerCase());
- if(opt){
-   sel.value=opt.value;
-   sel.disabled=true;
-   if(opt.value==='Internal Speaker' || opt.value==='Guest Speaker'){
-     document.getElementById('customName').style.display='block';
-     document.getElementById('customName').required=true;
-   }
- }
- syncNameField();
+ if(rp) document.getElementById('name').value=rp;
 }
 function generateLink(){
- const p=document.getElementById('adminPerson').value;if(!p)return alert('Select a Resource Person.');
+ const p=document.getElementById('adminPerson').value.trim();if(!p)return alert('Type a Resource Person name.');
  const link=location.href.split('?')[0]+'?rp='+encodeURIComponent(p);
  document.getElementById('personalLink').value=link;document.getElementById('adminStatus').textContent='Personal link generated.';
 }
 async function copyLink(){const x=document.getElementById('personalLink').value;if(!x)return alert('Generate the link first.');await navigator.clipboard.writeText(x);document.getElementById('adminStatus').textContent='Link copied.'}
 async function copyInvitation(){
- const p=document.getElementById('adminPerson').value,x=document.getElementById('personalLink').value;if(!p)return alert('Select a Resource Person.');if(!x){generateLink();return}
+ const p=document.getElementById('adminPerson').value.trim(),x=document.getElementById('personalLink').value;if(!p)return alert('Type a Resource Person name.');if(!x){generateLink();return}
  const m=`Subject: Invitation – KVS Music Teacher Training | Resource Person Availability
 
 Dear ${p},
