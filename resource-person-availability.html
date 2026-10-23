@@ -31,7 +31,7 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 </header>
 <main>
 <div class="card" style="border-left:5px solid #1769aa">
-<b>Two-Form Process:</b> This is <b>Form 1 — Availability & Contribution</b>. After submission, you will be directed to the separate <b>Form 2 — Financial / Speaker Details</b> form.
+<b>Form 1 — Availability & Contribution.</b> Please submit your availability and preferred session timings using this form.
 </div>
 
 <div class="card" id="adminPanel">
@@ -119,10 +119,7 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 <div class="card" id="successCard" style="display:none;border-left:5px solid #1b7f5a">
 <h2>Submission Completed</h2>
 <p id="successMessage">Your Resource Person Availability &amp; Contribution response has been submitted to ZIET Mumbai.</p>
-<div class="actions">
-<a id="financialLink" class="primary" href="#" style="display:inline-block;text-decoration:none">Proceed to Form 2 — Financial / Speaker Details</a>
-</div>
-<p class="help">Please complete Form 2 separately to provide financial and speaker details.</p>
+<p class="help">Your availability response has been recorded for submission. No Form 2 link is provided on this page.</p>
 </div>
 </main>
 
@@ -211,8 +208,7 @@ document.getElementById('form').addEventListener('submit',async e=>{
    document.getElementById('form').style.display='none';
    document.getElementById('adminPanel').style.display='none';
    document.getElementById('successCard').style.display='block';
-   const workshopTitle='Rhythm, Raga and Reflection: Reimagining Music Education with Bansuri';
-    document.getElementById('financialLink').href='https://taprimaryzietmumbai-kjrd.github.io/guest-speakers-digital-form/?rp='+encodeURIComponent(name)+'&workshop='+encodeURIComponent(workshopTitle);
+   // Form 2 link intentionally omitted as requested.
    window.scrollTo({top:document.getElementById('successCard').offsetTop-20,behavior:'smooth'});
  };
  try{
