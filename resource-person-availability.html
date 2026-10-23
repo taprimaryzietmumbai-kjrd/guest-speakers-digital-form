@@ -160,14 +160,19 @@ function generateLink(){
 }
 async function copyLink(){const x=document.getElementById('personalLink').value;if(!x)return alert('Generate the link first.');await navigator.clipboard.writeText(x);document.getElementById('adminStatus').textContent='Link copied.'}
 async function copyInvitation(){
- const p=document.getElementById('adminPerson').value.trim(),x=document.getElementById('personalLink').value;if(!p)return alert('Type a Resource Person name.');if(!x){generateLink();return}
+ const p=document.getElementById('adminPerson').value.trim();
+ if(!p)return alert('Type a Resource Person name.');
+ generateLink();
+ const x=document.getElementById('personalLink').value;
+ const designation=document.getElementById('adminDesignation').value.trim();
+ const designationNote=designation?`Post / Designation recorded for you: ${designation}. Please let us know if any correction is required.\\n\\n`:'';
  const m=`Subject: Invitation – KVS Music Teacher Training | Resource Person Availability
 
 Dear ${p},
 
 Greetings from Kendriya Vidyalaya Sangathan, ZIET Mumbai.
 
-You are requested to kindly indicate your availability and preferred contribution areas for the KVS Primary Music Teachers Training Programme.
+${designationNote}You are requested to kindly indicate your availability and preferred contribution areas for the KVS Primary Music Teachers Training Programme.
 
 Please complete the Resource Person Availability Form:
 ${x}
