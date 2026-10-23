@@ -43,6 +43,7 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 <div><label>Mobile / WhatsApp *</label><input id="adminMobile" type="text" placeholder="Enter mobile / WhatsApp number"></div>
 <div><label>Institution / Organization *</label><input id="adminInstitution" type="text" placeholder="Enter institution / organization"></div>
 <div><label>Post / Designation</label><input id="adminDesignation" type="text" placeholder="e.g., Professor, Principal, PGT"></div>
+<div style="grid-column:1/-1"><h3>Workshop Dates for This Invitation</h3><p class="help">Set these dates before generating the personal link. The speaker will see them as read-only.</p></div>
 <div><label>Workshop From Date *</label><input id="from" type="date"></div>
 <div><label>Workshop To Date *</label><input id="to" type="date"></div>
 <div style="grid-column:1/-1"><b>Duration:</b> <span id="duration">—</span><div id="days" class="days"></div></div>
@@ -152,6 +153,7 @@ function applyRP(){
  dates();
 }
 function generateLink(){
+ document.getElementById('personalLink').value='';
  const p=document.getElementById('adminPerson').value.trim();if(!p)return alert('Type a Resource Person name.');
  const email=document.getElementById('adminEmail').value.trim();
  const mobile=document.getElementById('adminMobile').value.trim();
