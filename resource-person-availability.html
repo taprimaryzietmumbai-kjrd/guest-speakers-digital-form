@@ -42,6 +42,7 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 <div><label>Email *</label><input id="adminEmail" type="email" placeholder="Enter email address"></div>
 <div><label>Mobile / WhatsApp *</label><input id="adminMobile" type="text" placeholder="Enter mobile / WhatsApp number"></div>
 <div><label>Institution / Organization *</label><input id="adminInstitution" type="text" placeholder="Enter institution / organization"></div>
+<div><label>Post / Designation</label><input id="adminDesignation" type="text" placeholder="e.g., Professor, Principal, PGT"></div>
 <div style="grid-column:1/-1"><label>Personal Link</label><input id="personalLink" readonly placeholder="Generate a personal link"></div>
 </div>
 <div class="actions">
@@ -57,6 +58,7 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 <input id="email" type="hidden">
 <input id="mobile" type="hidden">
 <input id="institution" type="hidden">
+<input id="designation" type="hidden">
 
 <div class="card">
 <h2>2. Upcoming Workshop Dates</h2>
@@ -140,16 +142,19 @@ function applyRP(){
  if(q.has('email')) document.getElementById('email').value=q.get('email');
  if(q.has('mobile')) document.getElementById('mobile').value=q.get('mobile');
  if(q.has('institution')) document.getElementById('institution').value=q.get('institution');
+ if(q.has('designation')) document.getElementById('designation').value=q.get('designation');
 }
 function generateLink(){
  const p=document.getElementById('adminPerson').value.trim();if(!p)return alert('Type a Resource Person name.');
  const email=document.getElementById('adminEmail').value.trim();
  const mobile=document.getElementById('adminMobile').value.trim();
  const institution=document.getElementById('adminInstitution').value.trim();
+ const designation=document.getElementById('adminDesignation').value.trim();
  const q=new URLSearchParams({rp:p});
  if(email)q.set('email',email);
  if(mobile)q.set('mobile',mobile);
  if(institution)q.set('institution',institution);
+ if(designation)q.set('designation',designation);
  const link=location.href.split('?')[0]+'?'+q.toString();
  document.getElementById('personalLink').value=link;document.getElementById('adminStatus').textContent='Personal link generated.';
 }
@@ -202,7 +207,7 @@ document.getElementById('form').addEventListener('submit',async e=>{
  const payload={
    workshopFrom:from, workshopTo:to, workshopDuration:n, resourcePerson:name,
    email:document.getElementById('email').value.trim(), phone:document.getElementById('mobile').value.trim(),
-   institution:document.getElementById('institution').value.trim(), expertise:document.getElementById('expertise').value.trim(),
+   institution:document.getElementById('institution').value.trim(), designation:document.getElementById('designation').value.trim(), expertise:document.getElementById('expertise').value.trim(),
    preferredDates:dayList, sessions:[...document.querySelectorAll('#sessionTimings input:checked')].map(x=>x.value), contributionModes:modes,
    remarks:document.getElementById('remarks').value.trim(), signatureData:sig,
    formType:'Resource Person Availability & Contribution Planner'
