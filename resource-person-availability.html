@@ -38,9 +38,11 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 <h2>Administrator — Personal Invitation Links</h2>
 <p class="help">This add-on does not replace your existing Guest Speaker form. It is an additional availability page in the same repository.</p>
 <div class="grid">
-<div><label>Resource Person</label>
-<input id="adminPerson" type="text" placeholder="Type Resource Person Name" autocomplete="name"></div>
-<div><label>Personal Link</label><input id="personalLink" readonly placeholder="Generate a personal link"></div>
+<div><label>Name *</label><input id="adminPerson" type="text" placeholder="Type Resource Person Name" autocomplete="name"></div>
+<div><label>Email *</label><input id="adminEmail" type="email" placeholder="Enter email address"></div>
+<div><label>Mobile / WhatsApp *</label><input id="adminMobile" type="text" placeholder="Enter mobile / WhatsApp number"></div>
+<div><label>Institution / Organization *</label><input id="adminInstitution" type="text" placeholder="Enter institution / organization"></div>
+<div style="grid-column:1/-1"><label>Personal Link</label><input id="personalLink" readonly placeholder="Generate a personal link"></div>
 </div>
 <div class="actions">
 <button class="primary" onclick="generateLink()">Generate Personal Link</button>
