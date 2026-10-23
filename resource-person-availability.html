@@ -140,9 +140,13 @@ function dates(){
 document.getElementById('from').addEventListener('change',dates);document.getElementById('to').addEventListener('change',dates);
 
 function applyRP(){
- const rp=new URLSearchParams(location.search).get('rp');
+ const q=new URLSearchParams(location.search);
+ const rp=q.get('rp');
  document.getElementById('adminPanel').style.display=rp?'none':'block';
  if(rp) document.getElementById('name').value=rp;
+ if(q.has('email')) document.getElementById('email').value=q.get('email');
+ if(q.has('mobile')) document.getElementById('mobile').value=q.get('mobile');
+ if(q.has('institution')) document.getElementById('institution').value=q.get('institution');
 }
 function generateLink(){
  const p=document.getElementById('adminPerson').value.trim();if(!p)return alert('Type a Resource Person name.');
