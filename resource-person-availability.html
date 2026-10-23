@@ -83,7 +83,13 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 
 <div class="card">
 <h2>3. Preferred Sessions / Contribution Areas</h2>
-<p class="help">Selectable session topics have been removed. Please indicate your preferred mode of contribution and any relevant details below.</p>
+<p class="help">Select all session timings when you are available to contribute.</p>
+<div id="sessionTimings">
+<label><input type="checkbox" value="9:30 AM - 11:00 AM"> 9:30 AM - 11:00 AM</label>
+<label><input type="checkbox" value="11:30 AM - 1:00 PM"> 11:30 AM - 1:00 PM</label>
+<label><input type="checkbox" value="2:30 PM - 4:00 PM"> 2:30 PM - 4:00 PM</label>
+<label><input type="checkbox" value="4:00 PM - 5:30 PM"> 4:00 PM - 5:30 PM</label>
+</div>
 </div>
 
 <div class="card">
@@ -228,7 +234,7 @@ document.getElementById('form').addEventListener('submit',async e=>{
    workshopFrom:from, workshopTo:to, workshopDuration:n, resourcePerson:name,
    email:document.getElementById('email').value.trim(), phone:document.getElementById('mobile').value.trim(),
    institution:document.getElementById('institution').value.trim(), expertise:document.getElementById('expertise').value.trim(),
-   preferredDates:dayList, sessions:[], contributionModes:modes,
+   preferredDates:dayList, sessions:[...document.querySelectorAll('#sessionTimings input:checked')].map(x=>x.value), contributionModes:modes,
    remarks:document.getElementById('remarks').value.trim(), signatureData:sig,
    formType:'Resource Person Availability & Contribution Planner'
  };
