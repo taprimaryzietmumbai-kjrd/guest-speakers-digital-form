@@ -50,9 +50,10 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 <div style="grid-column:1/-1"><label>Personal Link</label><input id="personalLink" readonly placeholder="Generate a personal link"></div>
 </div>
 <div class="actions">
-<button class="primary" onclick="generateLink()">Generate Personal Link</button>
-<button class="secondary" onclick="copyLink()">Copy Link</button>
-<button class="secondary" onclick="copyInvitation()">Copy Invitation Message</button>
+<button type="button" class="primary" onclick="generateLink()">Generate Personal Link</button>
+<button type="button" class="secondary" onclick="copyLink()">Copy Link</button>
+<button type="button" class="secondary" onclick="copyInvitation()">Copy Invitation Message</button>
+<button type="button" class="primary" id="emailInvitationButton" onclick="sendInvitationEmail()">Email Invitation</button>
 </div>
 <p id="adminStatus" class="help"></p>
 </div>
@@ -123,7 +124,7 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 </main>
 
 <script>
-const GOOGLE_SCRIPT_URL="https://script.google.com/macros/s/AKfycbxPf1H-V-kV1AOIVGo8NZ0HbMlhamTZlLhwHpqCxB1Aanbc3q3cc54SwN44P89WxDMv/exec";
+const GOOGLE_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwVfJsUI6WQYx7ijreP47ud8Vua5ezUF_4-ZW1UdjjeW0asFdz0wnuus_yn4EgA-9Le/exec";
 function dates(){
  const a=document.getElementById('from').value,b=document.getElementById('to').value, box=document.getElementById('days');
  box.innerHTML='';
@@ -186,6 +187,38 @@ async function copyInvitation(){
  await navigator.clipboard.writeText(m);
  document.getElementById('adminStatus').textContent='Invitation message copied.';
 }
+async function sendInvitationEmail() {
+ const name=document.getElementById('adminPerson').value.trim();
+ const email=document.getElementById('adminEmail').value.trim();
+ const mobile=document.getElementById('adminMobile').value.trim();
+ const institution=document.getElementById('adminInstitution').value.trim();
+ const designation=document.getElementById('adminDesignation').value.trim();
+ const from=document.getElementById('from').value,to=document.getElementById('to').value;
+ const status=document.getElementById('adminStatus');
+ const button=document.getElementById('emailInvitationButton');
+ if(!name){alert('Please enter the Resource Person name.');return;}
+ if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){alert('Please enter a valid email address.');document.getElementById('adminEmail').focus();return;}
+ if(!from||!to){alert('Please set both workshop dates.');return;}
+ if(to<from){alert('Workshop To Date cannot be earlier than From Date.');return;}
+ generateLink();
+ const personalLink=document.getElementById('personalLink').value.trim();
+ if(!personalLink)return;
+ const payload={action:'sendInvitation',resourcePerson:name,email:email,phone:mobile,institution:institution,designation:designation,workshopFrom:from,workshopTo:to,personalLink:personalLink};
+ button.disabled=true;
+ button.textContent='Sending Invitation…';
+ status.textContent='Sending invitation request…';
+ try{
+   await fetch(GOOGLE_SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload),keepalive:true});
+   status.textContent='Invitation request submitted. The browser cannot confirm delivery; check the recipient inbox and Apps Script Executions.';
+ }catch(error){
+   status.textContent='Could not send the invitation request. Please check your connection and try again.';
+   alert('Unable to send invitation request. Please try again.');
+ }finally{
+   button.disabled=false;
+   button.textContent='Email Invitation';
+ }
+}
+
 const canvas=document.getElementById('sig'),ctx=canvas.getContext('2d');let drawing=false;
 function pos(e){const r=canvas.getBoundingClientRect(),t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*canvas.width/r.width,y:(t.clientY-r.top)*canvas.height/r.height}}
 function down(e){drawing=true;ctx.beginPath();const p=pos(e);ctx.moveTo(p.x,p.y);e.preventDefault()}
