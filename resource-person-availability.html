@@ -174,25 +174,15 @@ async function copyInvitation(){
  if(!p)return alert('Type a Resource Person name.');
  generateLink();
  const x=document.getElementById('personalLink').value;
+ if(!x)return;
  const designation=document.getElementById('adminDesignation').value.trim();
- const designationNote=designation?`Post / Designation recorded for you: ${designation}. Please let us know if any correction is required.\\n\\n`:'';
- const m=`Subject: Invitation – KVS Music Teacher Training | Resource Person Availability
-
-Dear ${p},
-
-Greetings from Kendriya Vidyalaya Sangathan, ZIET Mumbai.
-
-${designationNote}You are requested to kindly indicate your availability and preferred contribution areas for the KVS Primary Music Teachers Training Programme.
-
-Please complete the Resource Person Availability Form:
-${x}
-
-Your response will help ZIET Mumbai prepare the workshop timetable and allocate sessions appropriately.
-
-With regards,
-ZIET Mumbai
-Kendriya Vidyalaya Sangathan`;
- await navigator.clipboard.writeText(m);document.getElementById('adminStatus').textContent='Invitation message copied.'
+ const designationNote=designation?'Post / Designation recorded for you: '+designation+'. Please let us know if any correction is required.\n\n':'';
+ const from=document.getElementById('from').value,to=document.getElementById('to').value;
+ const fmt=v=>new Date(v+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+ const dateNote='Workshop dates: '+fmt(from)+' to '+fmt(to)+'. These dates are set by ZIET Mumbai and are pre-filled in your personal form.\n\n';
+ const m='Subject: Invitation – KVS Music Teacher Training | Resource Person Availability\n\nDear '+p+',\n\nGreetings from Kendriya Vidyalaya Sangathan, ZIET Mumbai.\n\n'+designationNote+dateNote+'You are requested to kindly indicate your availability and preferred contribution areas for the KVS Primary Music Teachers Training Programme.\n\nPlease complete the Resource Person Availability Form:\n'+x+'\n\nYour response will help ZIET Mumbai prepare the workshop timetable and allocate sessions appropriately.\n\nWith regards,\nZIET Mumbai\nKendriya Vidyalaya Sangathan';
+ await navigator.clipboard.writeText(m);
+ document.getElementById('adminStatus').textContent='Invitation message copied.';
 }
 const canvas=document.getElementById('sig'),ctx=canvas.getContext('2d');let drawing=false;
 function pos(e){const r=canvas.getBoundingClientRect(),t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*canvas.width/r.width,y:(t.clientY-r.top)*canvas.height/r.height}}
