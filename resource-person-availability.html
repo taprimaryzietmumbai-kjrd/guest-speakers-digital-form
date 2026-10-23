@@ -146,7 +146,14 @@ function applyRP(){
 }
 function generateLink(){
  const p=document.getElementById('adminPerson').value.trim();if(!p)return alert('Type a Resource Person name.');
- const link=location.href.split('?')[0]+'?rp='+encodeURIComponent(p);
+ const email=document.getElementById('adminEmail').value.trim();
+ const mobile=document.getElementById('adminMobile').value.trim();
+ const institution=document.getElementById('adminInstitution').value.trim();
+ const q=new URLSearchParams({rp:p});
+ if(email)q.set('email',email);
+ if(mobile)q.set('mobile',mobile);
+ if(institution)q.set('institution',institution);
+ const link=location.href.split('?')[0]+'?'+q.toString();
  document.getElementById('personalLink').value=link;document.getElementById('adminStatus').textContent='Personal link generated.';
 }
 async function copyLink(){const x=document.getElementById('personalLink').value;if(!x)return alert('Generate the link first.');await navigator.clipboard.writeText(x);document.getElementById('adminStatus').textContent='Link copied.'}
