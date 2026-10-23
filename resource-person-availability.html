@@ -43,6 +43,9 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 <div><label>Mobile / WhatsApp *</label><input id="adminMobile" type="text" placeholder="Enter mobile / WhatsApp number"></div>
 <div><label>Institution / Organization *</label><input id="adminInstitution" type="text" placeholder="Enter institution / organization"></div>
 <div><label>Post / Designation</label><input id="adminDesignation" type="text" placeholder="e.g., Professor, Principal, PGT"></div>
+<div><label>Workshop From Date *</label><input id="from" type="date"></div>
+<div><label>Workshop To Date *</label><input id="to" type="date"></div>
+<div style="grid-column:1/-1"><b>Duration:</b> <span id="duration">—</span><div id="days" class="days"></div></div>
 <div style="grid-column:1/-1"><label>Personal Link</label><input id="personalLink" readonly placeholder="Generate a personal link"></div>
 </div>
 <div class="actions">
@@ -60,15 +63,13 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 <input id="institution" type="hidden">
 <input id="designation" type="hidden">
 
-<div class="card">
+<div class="card" id="workshopDatesDisplay">
 <h2>2. Upcoming Workshop Dates</h2>
-<p class="help">Select From and To dates. Duration and Day 1, Day 2… dates are generated automatically.</p>
-<div class="grid">
-<div><label>From Date *</label><input id="from" type="date" required></div>
-<div><label>To Date *</label><input id="to" type="date" required></div>
-</div>
-<p><b>Duration:</b> <span id="duration">—</span></p>
-<div id="days" class="days"></div>
+<p class="help">The workshop dates have been set by ZIET Mumbai for this invitation.</p>
+<p><b>From:</b> <span id="speakerFrom">To be confirmed</span></p>
+<p><b>To:</b> <span id="speakerTo">To be confirmed</span></p>
+<p><b>Duration:</b> <span id="speakerDuration">—</span></p>
+<div id="speakerDays" class="days"></div>
 </div>
 
 <div class="card">
