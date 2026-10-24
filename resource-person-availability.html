@@ -87,7 +87,16 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 </div>
 
 <div class="card">
-<h2>4. Mode of Contribution</h2>
+<h2>4. Intended Workshop Title & Target Groups</h2>
+<p class="help">Please suggest a suitable title for your proposed session/workshop and identify the intended audience.</p>
+<label for="intendedWorkshopTitle">Intended Workshop Title *</label>
+<input id="intendedWorkshopTitle" type="text" required maxlength="250" placeholder="Enter the proposed title of your session/workshop">
+<label for="intendedTargetGroups" style="margin-top:15px">Intended Target Groups *</label>
+<textarea id="intendedTargetGroups" required maxlength="1000" placeholder="e.g., PRTs, TGTs, PGTs, Headmasters/Principals, Balvatika Teachers, Primary Teachers, etc."></textarea>
+</div>
+
+<div class="card">
+<h2>5. Mode of Contribution</h2>
 <div id="modes">
 <label><input type="checkbox" value="Face-to-Face / In-person"> Face-to-Face / In-person</label>
 <label><input type="checkbox" value="Online / Virtual"> Online / Virtual</label>
@@ -103,7 +112,7 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 </div>
 
 <div class="card">
-<h2>5. Brief Professional Profile & Availability Confirmation</h2>
+<h2>6. Brief Professional Profile & Availability Confirmation</h2>
 <p class="help">Please share a brief professional profile for the Kendriya Vidyalaya audience. You may mention your current role, institution, areas of expertise, relevant experience, and key achievements.</p>
 <label for="professionalProfile">Brief Professional Profile *</label>
 <textarea id="professionalProfile" required maxlength="2500" placeholder="Write a brief professional profile to introduce you to the KV audience."></textarea>
@@ -120,14 +129,14 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 </div>
 
 <div class="card">
-<h2>6. Expert Signature</h2>
+<h2>7. Expert Signature</h2>
 <p class="help">Draw your signature below or upload an image.</p>
 <canvas id="sig" width="800" height="180" style="width:100%;border:1px solid #ccd8e8;border-radius:10px;touch-action:none"></canvas>
 <div class="actions"><button type="button" class="secondary" onclick="clearSig()">Clear Signature</button><input type="file" id="sigFile" accept="image/png,image/jpeg,image/webp"></div>
 </div>
 
 <div class="card">
-<h2>7. Submit Response</h2>
+<h2>8. Submit Response</h2>
 <button class="primary" type="submit">Submit Availability Response</button>
 <p id="status" class="help"></p>
 </div>
@@ -277,6 +286,8 @@ document.getElementById('form').addEventListener('submit',async e=>{
    email:document.getElementById('email').value.trim(), phone:document.getElementById('mobile').value.trim(),
    institution:document.getElementById('institution').value.trim(), designation:document.getElementById('designation').value.trim(), expertise:document.getElementById('expertise').value.trim() + '\n\nBrief Professional Profile: ' + document.getElementById('professionalProfile').value.trim(),
    professionalProfile:document.getElementById('professionalProfile').value.trim(),
+   intendedWorkshopTitle:document.getElementById('intendedWorkshopTitle').value.trim(),
+   intendedTargetGroups:document.getElementById('intendedTargetGroups').value.trim(),
    availabilityConfirmation:document.querySelector('input[name="availabilityConfirmation"]:checked').value,
    preferredDates:dayList, sessions:[...document.querySelectorAll('#sessionTimings input:checked')].map(x=>x.value), contributionModes:modes,
    remarks:('Availability Confirmation: ' + document.querySelector('input[name="availabilityConfirmation"]:checked').value + (document.getElementById('remarks').value.trim() ? '\nRemarks: ' + document.getElementById('remarks').value.trim() : '')), signatureData:sig,
