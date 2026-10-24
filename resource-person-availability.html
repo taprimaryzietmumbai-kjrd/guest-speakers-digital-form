@@ -43,6 +43,10 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 <div><label>Mobile / WhatsApp *</label><input id="adminMobile" type="text" placeholder="Enter mobile / WhatsApp number"></div>
 <div><label>Institution / Organization *</label><input id="adminInstitution" type="text" placeholder="Enter institution / organization"></div>
 <div><label>Post / Designation</label><input id="adminDesignation" type="text" placeholder="e.g., Professor, Principal, PGT"></div>
+<div style="grid-column:1/-1"><h3>Workshop Details to Include in the Invitation</h3><p class="help">The Administrator sets these details here. They will appear pre-filled and read-only in the Resource Person's personal invitation link.</p></div>
+<div style="grid-column:1/-1"><label for="adminWorkshopTitle">Intended Workshop Title *</label><input id="adminWorkshopTitle" type="text" maxlength="250" placeholder="Enter the workshop/session title set by ZIET Mumbai"></div>
+<div style="grid-column:1/-1"><label for="adminTargetGroups">Intended Target Groups *</label><textarea id="adminTargetGroups" maxlength="1000" placeholder="e.g., PRTs, TGTs, PGTs, Headmasters/Principals, Balvatika Teachers"></textarea></div>
+<div><label for="adminTargetSize">Target Size (Expected Number of Participants) *</label><input id="adminTargetSize" type="number" min="1" max="10000" step="1" placeholder="e.g., 40"></div>
 <div style="grid-column:1/-1"><h3>Workshop Dates for This Invitation</h3><p class="help">Set these dates before generating the personal link. The speaker will see them as read-only.</p></div>
 <div><label>Workshop From Date *</label><input id="from" type="date"></div>
 <div><label>Workshop To Date *</label><input id="to" type="date"></div>
@@ -87,14 +91,11 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 </div>
 
 <div class="card">
-<h2>4. Intended Workshop Title & Target Groups</h2>
-<p class="help">Please suggest a suitable title for your proposed session/workshop and identify the intended audience.</p>
-<label for="intendedWorkshopTitle">Intended Workshop Title *</label>
-<input id="intendedWorkshopTitle" type="text" required maxlength="250" placeholder="Enter the proposed title of your session/workshop">
-<label for="intendedTargetGroups" style="margin-top:15px">Intended Target Groups *</label>
-<textarea id="intendedTargetGroups" required maxlength="1000" placeholder="e.g., PRTs, TGTs, PGTs, Headmasters/Principals, Balvatika Teachers, Primary Teachers, etc."></textarea>
-<label for="targetSize" style="margin-top:15px">Target Size (Expected Number of Participants) *</label>
-<input id="targetSize" type="number" required min="1" max="10000" step="1" placeholder="e.g., 40">
+<h2>4. Workshop Title, Target Groups & Target Size</h2>
+<p class="help">These details have been set by the ZIET Mumbai Administrator for this invitation.</p>
+<label>Intended Workshop Title</label><input id="intendedWorkshopTitle" type="text" readonly>
+<label style="margin-top:15px">Intended Target Groups</label><textarea id="intendedTargetGroups" readonly></textarea>
+<label style="margin-top:15px">Target Size (Expected Number of Participants)</label><input id="targetSize" type="number" readonly>
 </div>
 
 <div class="card">
@@ -184,6 +185,9 @@ function applyRP(){
  if(q.has('mobile')) document.getElementById('mobile').value=q.get('mobile');
  if(q.has('institution')) document.getElementById('institution').value=q.get('institution');
  if(q.has('designation')) document.getElementById('designation').value=q.get('designation');
+ if(q.has('workshopTitle')) document.getElementById('intendedWorkshopTitle').value=q.get('workshopTitle');
+ if(q.has('targetGroups')) document.getElementById('intendedTargetGroups').value=q.get('targetGroups');
+ if(q.has('targetSize')) document.getElementById('targetSize').value=q.get('targetSize');
  if(q.has('from')) document.getElementById('from').value=q.get('from');
  if(q.has('to')) document.getElementById('to').value=q.get('to');
  dates();
@@ -195,10 +199,16 @@ function generateLink(){
  const mobile=document.getElementById('adminMobile').value.trim();
  const institution=document.getElementById('adminInstitution').value.trim();
  const designation=document.getElementById('adminDesignation').value.trim();
+ const workshopTitle=document.getElementById('adminWorkshopTitle').value.trim();
+ const targetGroups=document.getElementById('adminTargetGroups').value.trim();
+ const targetSize=document.getElementById('adminTargetSize').value.trim();
+ if(!workshopTitle||!targetGroups||!targetSize)return alert('Please complete Workshop Title, Target Groups and Target Size.');
+ if(!/^[1-9]\\d*$/.test(targetSize)||Number(targetSize)>10000)return alert('Target Size must be a whole number from 1 to 10000.');
  const from=document.getElementById('from').value,to=document.getElementById('to').value;
  if(!from||!to)return alert('Set both workshop dates before generating the invitation link.');
  if(new Date(to+'T00:00:00')<new Date(from+'T00:00:00'))return alert('To Date cannot be earlier than From Date.');
  const q=new URLSearchParams({rp:p,from:from,to:to});
+ q.set('workshopTitle',workshopTitle);q.set('targetGroups',targetGroups);q.set('targetSize',targetSize);
  if(email)q.set('email',email);
  if(mobile)q.set('mobile',mobile);
  if(institution)q.set('institution',institution);
@@ -238,7 +248,7 @@ async function sendInvitationEmail() {
  generateLink();
  const personalLink=document.getElementById('personalLink').value.trim();
  if(!personalLink)return;
- const payload={action:'sendInvitation',resourcePerson:name,email:email,phone:mobile,institution:institution,designation:designation,workshopFrom:from,workshopTo:to,personalLink:personalLink};
+ const payload={action:'sendInvitation',resourcePerson:name,email:email,phone:mobile,institution:institution,designation:designation,workshopFrom:from,workshopTo:to,workshopTitle:document.getElementById('adminWorkshopTitle').value.trim(),targetGroups:document.getElementById('adminTargetGroups').value.trim(),targetSize:document.getElementById('adminTargetSize').value.trim(),personalLink:personalLink};
  button.disabled=true;
  button.textContent='Sending Invitation…';
  status.textContent='Sending invitation request…';
