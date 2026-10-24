@@ -203,7 +203,7 @@ function generateLink(){
  const targetGroups=document.getElementById('adminTargetGroups').value.trim();
  const targetSize=document.getElementById('adminTargetSize').value.trim();
  if(!workshopTitle||!targetGroups||!targetSize)return alert('Please complete Workshop Title, Target Groups and Target Size.');
- if(!/^[1-9]\\d*$/.test(targetSize)||Number(targetSize)>10000)return alert('Target Size must be a whole number from 1 to 10000.');
+ if(!/^[1-9]\d*$/.test(targetSize)||Number(targetSize)>10000)return alert('Target Size must be a whole number from 1 to 10000.');
  const from=document.getElementById('from').value,to=document.getElementById('to').value;
  if(!from||!to)return alert('Set both workshop dates before generating the invitation link.');
  if(new Date(to+'T00:00:00')<new Date(from+'T00:00:00'))return alert('To Date cannot be earlier than From Date.');
