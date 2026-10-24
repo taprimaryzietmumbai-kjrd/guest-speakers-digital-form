@@ -93,6 +93,8 @@ button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:poin
 <input id="intendedWorkshopTitle" type="text" required maxlength="250" placeholder="Enter the proposed title of your session/workshop">
 <label for="intendedTargetGroups" style="margin-top:15px">Intended Target Groups *</label>
 <textarea id="intendedTargetGroups" required maxlength="1000" placeholder="e.g., PRTs, TGTs, PGTs, Headmasters/Principals, Balvatika Teachers, Primary Teachers, etc."></textarea>
+<label for="targetSize" style="margin-top:15px">Target Size (Expected Number of Participants) *</label>
+<input id="targetSize" type="number" required min="1" max="10000" step="1" placeholder="e.g., 40">
 </div>
 
 <div class="card">
@@ -288,6 +290,7 @@ document.getElementById('form').addEventListener('submit',async e=>{
    professionalProfile:document.getElementById('professionalProfile').value.trim(),
    intendedWorkshopTitle:document.getElementById('intendedWorkshopTitle').value.trim(),
    intendedTargetGroups:document.getElementById('intendedTargetGroups').value.trim(),
+   targetSize:document.getElementById('targetSize').value,
    availabilityConfirmation:document.querySelector('input[name="availabilityConfirmation"]:checked').value,
    preferredDates:dayList, sessions:[...document.querySelectorAll('#sessionTimings input:checked')].map(x=>x.value), contributionModes:modes,
    remarks:('Availability Confirmation: ' + document.querySelector('input[name="availabilityConfirmation"]:checked').value + (document.getElementById('remarks').value.trim() ? '\nRemarks: ' + document.getElementById('remarks').value.trim() : '')), signatureData:sig,
