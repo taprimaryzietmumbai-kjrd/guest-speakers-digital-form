@@ -134,9 +134,10 @@ function dates(){
  const n=Math.floor((end-start)/86400000)+1;
  if(n<1){document.getElementById('duration').textContent='Invalid date range';document.getElementById('speakerDuration').textContent='Invalid date range';return}
  const fmt=d=>d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+ const weekday=d=>d.toLocaleDateString('en-IN',{weekday:'long'});
  document.getElementById('duration').textContent=n+' day'+(n>1?'s':'')+' (inclusive)';
  document.getElementById('speakerFrom').textContent=fmt(start);document.getElementById('speakerTo').textContent=fmt(end);document.getElementById('speakerDuration').textContent=n+' day'+(n>1?'s':'')+' (inclusive)';
- for(let i=0;i<n;i++){let d=new Date(start);d.setDate(d.getDate()+i);const label='<span class="day"><b>Day '+(i+1)+'</b> — '+fmt(d)+'</span>';box.innerHTML+=label;speakerBox.innerHTML+=label}
+ for(let i=0;i<n;i++){let d=new Date(start);d.setDate(d.getDate()+i);const label='<span class="day"><b>Day '+(i+1)+'</b> — '+weekday(d)+', '+fmt(d)+'</span>';box.innerHTML+=label;speakerBox.innerHTML+=label}
 }
 document.getElementById('from').addEventListener('change',dates);document.getElementById('to').addEventListener('change',dates);
 
@@ -242,7 +243,7 @@ document.getElementById('form').addEventListener('submit',async e=>{
  const n=Math.floor((end-start)/86400000)+1;
  if(n<1)return alert('Please check the workshop dates.');
  const dayList=[];
- for(let i=0;i<n;i++){let d=new Date(start);d.setDate(d.getDate()+i);dayList.push('Day '+(i+1)+' — '+d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}));}
+ for(let i=0;i<n;i++){let d=new Date(start);d.setDate(d.getDate()+i);dayList.push('Day '+(i+1)+' — '+d.toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'short',year:'numeric'}));}
  const sig=document.getElementById('sig').toDataURL('image/png');
  const payload={
    workshopFrom:from, workshopTo:to, workshopDuration:n, resourcePerson:name,
